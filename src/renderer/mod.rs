@@ -1,2 +1,2 @@
-pub mod Color.rs
-pub mod Framebufer.rs
+pub mod color;
+pub mod framebuffer;
