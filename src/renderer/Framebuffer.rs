@@ -7,5 +7,7 @@ pub struct Framebuffer {
 }
 
 impl Framebuffer{
-    fn read() -> (){}
+    //fill
+    //square
+    //triangle
 }
