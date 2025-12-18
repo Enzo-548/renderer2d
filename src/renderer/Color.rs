@@ -22,16 +22,4 @@ impl Color{
     pub fn full() -> Self{
         Self{r:255,g:255,b:255,a:255}
     }
-    pub fn red() -> Self{
-        Color::RED
-    }
-    pub fn green() -> Self{
-        Color::GREEN
-    }pub fn blue() -> Self{
-        Color::BLUE
-    }pub fn white() -> Self{
-        Color::WHITE
-    }pub fn black() -> Self{
-        Color::BLACK
-    }
 }

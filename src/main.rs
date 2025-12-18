@@ -23,19 +23,19 @@ fn main() {
             *i = 0; // write something more funny here!
         }*/
         if window.is_key_down(Key::NumPad0){
-            render.framebuffer.fill(Color::white());
+            render.clear(Color::WHITE);
         }
         if window.is_key_down(Key::NumPad1){
-            render.framebuffer.fill(Color::black());
+            render.clear(Color::BLACK);
         }
         if window.is_key_down(Key::NumPad2){
-            render.framebuffer.fill(Color::blue());
+            render.clear(Color::BLUE);
         }
         if window.is_key_down(Key::NumPad3){
-            render.framebuffer.fill(Color::green());
+            render.clear(Color::GREEN);
         }
         if window.is_key_down(Key::NumPad4){
-            render.framebuffer.fill(Color::red());
+            render.clear(Color::RED);
         }
         // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
         window

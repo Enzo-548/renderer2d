@@ -25,7 +25,7 @@ impl Framebuffer{
         Self{
             width,
             height,
-            pixels_buffer: vec![Color::white(); size],
+            pixels_buffer: vec![Color::zero(); size],
         }
     }
     pub fn as_u32_buffer(&self) -> Vec<u32> {
@@ -38,10 +38,5 @@ impl Framebuffer{
               |  (c.b as u32)
             })
             .collect()
-    }
-    pub fn fill(&mut self, color: Color) {
-        for pixel in &mut self.pixels_buffer {
-            *pixel = color;
-        }
     }
 }
