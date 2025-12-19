@@ -1,10 +1,10 @@
 mod renderer;
-use minifb::{Key, Window, WindowOptions};
+use minifb::{Key, KeyRepeat, Window, WindowOptions};
 
-use crate::renderer::{color::Color, framebuffer::{self, Framebuffer}, render::{self, Render}};
+use crate::renderer::{color::Color, framebuffer::{Framebuffer}, render::{Render}};
 fn main() {
     println!("Hello, world!");
-    let buffer = Framebuffer::new_as_filled(600, 800);
+    let buffer = Framebuffer::new(600, 800);
     let mut render: Render = Render::new(buffer);
     let mut window = Window::new(
         "Test - ESC to exit",
@@ -17,29 +17,59 @@ fn main() {
     });
 
     window.set_target_fps(60);
+    
+    let mut count_but = 0;
+    let color_array = [Color::WHITE,Color::BLACK,Color::RED,Color::GREEN,Color::BLUE];
+    let mut draw_color_sel = 0;
+    let mut draw_color =    color_array[draw_color_sel];
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
         /*for i in render.buffer().iter_mut() {
             *i = 0; // write something more funny here!
         }*/
-        if window.is_key_down(Key::NumPad0){
+        
+        if window.is_key_pressed(Key::NumPad0, KeyRepeat::No){
             render.clear(Color::WHITE);
+            count_but+=1;
         }
-        if window.is_key_down(Key::NumPad1){
+        if window.is_key_pressed(Key::NumPad1, KeyRepeat::No){
             render.clear(Color::BLACK);
+            count_but+=1;
         }
-        if window.is_key_down(Key::NumPad2){
+        if window.is_key_pressed(Key::NumPad2, KeyRepeat::No){
             render.clear(Color::BLUE);
+            count_but+=1;
         }
-        if window.is_key_down(Key::NumPad3){
+        if window.is_key_pressed(Key::NumPad3, KeyRepeat::No){
             render.clear(Color::GREEN);
+            count_but+=1;
         }
-        if window.is_key_down(Key::NumPad4){
+        if window.is_key_pressed(Key::NumPad4, KeyRepeat::No){
             render.clear(Color::RED);
+            count_but+=1;
         }
+        if window.is_key_pressed(Key::Up, KeyRepeat::No){
+                render.draw_vertical_line(draw_color);
+                count_but+=1;
+        }
+        if window.is_key_pressed(Key::Right, KeyRepeat::No){
+                render.draw_horizontal_line(draw_color);
+                count_but+=1;
+        }
+
+        if window.is_key_pressed(Key::RightShift, KeyRepeat::No){
+                draw_color_sel += 1;
+                if  draw_color_sel == 5{
+                    draw_color_sel = 0;
+                }
+            draw_color = color_array[draw_color_sel];
+            count_but+=1;
+        }
+
         // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
         window
             .update_with_buffer(&render.framebuffer.as_u32_buffer(), render.framebuffer.width as usize, render.framebuffer.height as usize)
             .unwrap();
     }
+    println!("A quantidade de vezes que os botoes foram apertados foi: {}", count_but);
 }
