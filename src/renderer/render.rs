@@ -30,7 +30,7 @@ impl Render{
 
     pub fn draw_vertical_line(&mut self, color: Color){
         let mut i = 0;
-                while i <= self.framebuffer.height{
+                while i < self.framebuffer.height{
                 self.put_pixel(self.framebuffer.width/2-3, i, color);
                 self.put_pixel(self.framebuffer.width/2-2, i, color);
                 self.put_pixel(self.framebuffer.width/2-1, i, color);
@@ -44,7 +44,7 @@ impl Render{
 
     pub fn draw_horizontal_line(&mut self, color: Color){
         let mut i = 0;
-                while i <= self.framebuffer.width{
+                while i < self.framebuffer.width{
                 self.put_pixel(i, self.framebuffer.height/2, color);
                 self.put_pixel(i, self.framebuffer.height/2+1, color);
                 self.put_pixel(i, self.framebuffer.height/2+2, color);
