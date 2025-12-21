@@ -1,10 +1,12 @@
 mod renderer;
+use std::u32;
+
 use minifb::{Key, KeyRepeat, Window, WindowOptions};
 
 use crate::renderer::{color::Color, framebuffer::{Framebuffer}, render::{Render}};
 fn main() {
     println!("Hello, world!");
-    let buffer = Framebuffer::new(600, 800);
+    let buffer = Framebuffer::new(600, 500);
     let mut render: Render = Render::new(buffer);
     let mut window = Window::new(
         "Test - ESC to exit",
@@ -49,11 +51,13 @@ fn main() {
             count_but+=1;
         }
         if window.is_key_pressed(Key::Up, KeyRepeat::No){
-                render.draw_vertical_line(draw_color);
+            let mid_canvas = (render.framebuffer.width/2) as i32;    
+                render.draw_vertical_line(mid_canvas, 0, render.framebuffer.height as i32, 3, draw_color);
                 count_but+=1;
         }
         if window.is_key_pressed(Key::Right, KeyRepeat::No){
-                render.draw_horizontal_line(draw_color);
+            let mid_canvas = (render.framebuffer.height/2) as i32;
+                render.draw_horizontal_line(0, mid_canvas, render.framebuffer.width as i32, 3, draw_color);
                 count_but+=1;
         }
 

@@ -27,32 +27,34 @@ impl Render{
         let index = (y*self.framebuffer.width + x) as usize;
         self.framebuffer.pixels_buffer[index] = color;
     }
-
-    pub fn draw_vertical_line(&mut self, color: Color){
-        let mut i = 0;
-                while i < self.framebuffer.height{
-                self.put_pixel(self.framebuffer.width/2-3, i, color);
-                self.put_pixel(self.framebuffer.width/2-2, i, color);
-                self.put_pixel(self.framebuffer.width/2-1, i, color);
-                self.put_pixel(self.framebuffer.width/2, i, color);
-                self.put_pixel(self.framebuffer.width/2+1, i, color);
-                self.put_pixel(self.framebuffer.width/2+2, i, color);
-                self.put_pixel(self.framebuffer.width/2+3, i, color);
-                i+=1;
-            }
+    //Generalized draw, should unify draw vertical and horizontal lines along the center of the canvas
+    /*pub fn draw_line(&mut self, mut x0:i32, x1:i32, mut y0:i32, y1:i32, size:i32, color: Color){
+        //aqui deveria receber o eixo de desenho, seja x ou  ou os dois
+        //mas e se depois eu quiser reutilizar para o mouse ?
+        //vai ter que passar os dois eixos
+        //x1 e y1 são limites no meu código
+        
+    }*/
+    pub fn draw_vertical_line(&mut self, x: i32, y_start:i32, y_end:i32, thickness:i32, color: Color){
+        for i in -thickness..=thickness{
+                let mut y:i32 = y_start;
+                while y < y_end{
+                    //implict clamp
+                    let cur_thickness = (x+i) as u32;
+                    self.put_pixel(cur_thickness, y as u32, color);
+                    y+=1;
+                }
+        }
     }
-
-    pub fn draw_horizontal_line(&mut self, color: Color){
-        let mut i = 0;
-                while i < self.framebuffer.width{
-                self.put_pixel(i, self.framebuffer.height/2, color);
-                self.put_pixel(i, self.framebuffer.height/2+1, color);
-                self.put_pixel(i, self.framebuffer.height/2+2, color);
-                self.put_pixel(i, self.framebuffer.height/2, color);
-                self.put_pixel(i, self.framebuffer.height/2-1, color);
-                self.put_pixel(i, self.framebuffer.height/2-2,color);
-                self.put_pixel(i, self.framebuffer.height/2-3, color);
-                i+=1;
+    pub fn draw_horizontal_line(&mut self, x_start:i32, y:i32, x_end:i32, thickness:i32, color: Color){
+        for i in -thickness..=thickness{
+                let mut x = x_start as i32;
+                while x < x_end{
+                    //implict clamp
+                    let cur_thickness = (y+i) as u32;
+                    self.put_pixel(x as u32, cur_thickness, color);
+                    x+=1;
+                }
             }
     }
     /// Acesso somente-leitura ao buffer
