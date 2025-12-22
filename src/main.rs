@@ -1,9 +1,8 @@
 mod renderer;
-use std::u32;
 
 use minifb::{Key, KeyRepeat, Window, WindowOptions};
 
-use crate::renderer::{color::Color, framebuffer::{Framebuffer}, render::{Render}};
+use crate::renderer::{color::{self, Color}, framebuffer::Framebuffer, render::Render};
 fn main() {
     println!("Hello, world!");
     let buffer = Framebuffer::new(600, 500);
