@@ -38,7 +38,7 @@ impl Render{
     pub fn draw_vertical_line(&mut self, x: i32, y_start:i32, y_end:i32, thickness:i32, color: Color){
         for i in -thickness..=thickness{
                 let mut y:i32 = y_start;
-                while y < y_end{
+                while y <= y_end{
                     //implict clamp
                     let cur_thickness = (x+i) as u32;
                     self.put_pixel(cur_thickness, y as u32, color);
@@ -49,7 +49,7 @@ impl Render{
     pub fn draw_horizontal_line(&mut self, x_start:i32, y:i32, x_end:i32, thickness:i32, color: Color){
         for i in -thickness..=thickness{
                 let mut x = x_start as i32;
-                while x < x_end{
+                while x <= x_end{
                     //implict clamp
                     let cur_thickness = (y+i) as u32;
                     self.put_pixel(x as u32, cur_thickness, color);
@@ -71,10 +71,10 @@ impl Render{
         let y_coordinate_up_side = y_ref_point+height;
         //downline
         let y_coordinate_down_side = y_ref_point-height;
-        self.draw_vertical_line (x_coordinate_right_side,y_coordinate_down_side,y_coordinate_up_side,thickness,color);
-        self.draw_vertical_line (x_coordinate_left_side,y_coordinate_down_side,y_coordinate_up_side,thickness,color);
-        self.draw_horizontal_line(x_coordinate_left_side, y_coordinate_down_side, x_coordinate_right_side, thickness, color);
-        self.draw_horizontal_line(x_coordinate_left_side, y_coordinate_up_side, x_coordinate_right_side, thickness, color);
+        self.draw_vertical_line (x_coordinate_right_side,y_coordinate_down_side - thickness,y_coordinate_up_side + thickness,thickness,color);
+        self.draw_vertical_line (x_coordinate_left_side,y_coordinate_down_side - thickness,y_coordinate_up_side + thickness,thickness,color);
+        self.draw_horizontal_line(x_coordinate_left_side - thickness, y_coordinate_down_side, x_coordinate_right_side + thickness, thickness, color);
+        self.draw_horizontal_line(x_coordinate_left_side - thickness, y_coordinate_up_side, x_coordinate_right_side + thickness, thickness, color);
     }
     /// Acesso somente-leitura ao buffer
     pub fn buffer(&self) -> &[Color]{
