@@ -5,7 +5,7 @@ use minifb::{Key, KeyRepeat, Window, WindowOptions};
 use crate::renderer::{color::{self, Color}, framebuffer::Framebuffer, render::Render};
 fn main() {
     println!("Hello, world!");
-    let buffer = Framebuffer::new(600, 500);
+    let buffer = Framebuffer::new(600, 600);
     let mut render: Render = Render::new(buffer);
     let mut window = Window::new(
         "Test - ESC to exit",
@@ -59,7 +59,6 @@ fn main() {
                 render.draw_horizontal_line(0, mid_canvas, render.framebuffer.width as i32, 3, draw_color);
                 count_but+=1;
         }
-
         if window.is_key_pressed(Key::RightShift, KeyRepeat::No){
                 draw_color_sel += 1;
                 if  draw_color_sel == 5{
@@ -67,6 +66,18 @@ fn main() {
                 }
             draw_color = color_array[draw_color_sel];
             count_but+=1;
+        }
+        if window.is_key_pressed(Key::S, KeyRepeat::No){
+            let mid_width_canvas = (render.framebuffer.width/2) as i32;
+            let mid_height_canvas = (render.framebuffer.height/2) as i32;
+            render.draw_rectangle(
+                mid_width_canvas, 
+                mid_height_canvas, 
+                55, 
+                55, 
+                3, 
+                draw_color);
+                count_but+=1;
         }
 
         // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way

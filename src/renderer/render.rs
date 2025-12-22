@@ -57,6 +57,25 @@ impl Render{
                 }
             }
     }
+    pub fn draw_rectangle(&mut self, x_ref_point: i32, y_ref_point: i32, width:i32, height:i32, thickness:i32, color:Color){
+        //x_start and x_end indicate the width of the rectangle and y_pos where those lines will be drawn
+        //although it is possible that is nescesserary to indicate a reference point for the shape
+        //as the shape shall be drawn from this point and may dictate the height and width of the shape.
+        //draw_rectangle(&mut self, x_ref_point: u32, y_ref_point: u32, width:i32, height:i32, thickness:i32, color:Color)
+        //self.draw_horizontal_line()
+        //rightside
+        let x_coordinate_right_side = x_ref_point+width; //355
+        //leftside
+        let x_coordinate_left_side = x_ref_point-width; //245
+        //upline
+        let y_coordinate_up_side = y_ref_point+height;
+        //downline
+        let y_coordinate_down_side = y_ref_point-height;
+        self.draw_vertical_line (x_coordinate_right_side,y_coordinate_down_side,y_coordinate_up_side,thickness,color);
+        self.draw_vertical_line (x_coordinate_left_side,y_coordinate_down_side,y_coordinate_up_side,thickness,color);
+        self.draw_horizontal_line(x_coordinate_left_side, y_coordinate_down_side, x_coordinate_right_side, thickness, color);
+        self.draw_horizontal_line(x_coordinate_left_side, y_coordinate_up_side, x_coordinate_right_side, thickness, color);
+    }
     /// Acesso somente-leitura ao buffer
     pub fn buffer(&self) -> &[Color]{
         &self.framebuffer.pixels_buffer
