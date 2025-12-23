@@ -38,22 +38,44 @@ impl Render{
     pub fn draw_vertical_line(&mut self, x: i32, y_start:i32, y_end:i32, thickness:i32, color: Color){
         for i in -thickness..=thickness{
                 let mut y:i32 = y_start;
+                if y_start < y_end{
+                //less than size
                 while y <= y_end{
                     //implict clamp
                     let cur_thickness = (x+i) as u32;
                     self.put_pixel(cur_thickness, y as u32, color);
                     y+=1;
                 }
+            } else {
+                //more than size
+                    while y >= y_end{
+                    //implict clamp
+                    let cur_thickness = (x+i) as u32;
+                    self.put_pixel(cur_thickness, y as u32, color);
+                    y-=1;
+                }
+            }
         }
     }
     pub fn draw_horizontal_line(&mut self, x_start:i32, y:i32, x_end:i32, thickness:i32, color: Color){
         for i in -thickness..=thickness{
                 let mut x = x_start as i32;
-                while x <= x_end{
-                    //implict clamp
-                    let cur_thickness = (y+i) as u32;
-                    self.put_pixel(x as u32, cur_thickness, color);
-                    x+=1;
+                if x_start < x_end{
+                //less than size
+                    while x <= x_end{
+                        //implict clamp
+                        let cur_thickness = (y+i) as u32;
+                        self.put_pixel(x as u32, cur_thickness, color);
+                        x+=1;
+                    }
+                } else {
+                //more than size
+                    while x >= x_end{
+                        //implict clamp
+                        let cur_thickness = (y+i) as u32;
+                        self.put_pixel(x as u32, cur_thickness, color);
+                        x-=1;
+                    }
                 }
             }
     }
