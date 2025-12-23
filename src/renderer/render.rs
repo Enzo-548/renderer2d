@@ -57,6 +57,65 @@ impl Render{
                 }
             }
     }
+    pub fn draw_perfect_diagonal_line(&mut self, x_start:i32, y_start:i32, x_end:i32, y_end:i32, thickness:i32, color: Color){
+        for i in -thickness..=thickness{
+                let mut x = x_start as i32;
+                let mut y = y_start as i32;
+                if x_start < x_end && y_start < y_end{
+                    //less than size
+                    while x <= x_end &&  y <= y_end{
+                        //implict clamp
+                        let cur_thickness_y = (y+i) as u32;
+                        let cur_thickness_x = (x+i) as u32;
+                        self.put_pixel(x as u32, cur_thickness_y, color);
+                        self.put_pixel(y as u32, cur_thickness_x, color);
+                        x+=1;
+                        y+=1;
+                        }
+                println!("veio pro lado menor !")
+                } 
+                if  x_start > x_end && y_start > y_end{
+                    //more than size
+                    while x >= x_end &&  y >= y_end{
+                        //implict clamp
+                        let cur_thickness_y = (y+i) as u32;
+                        let cur_thickness_x = (x+i) as u32;
+                        self.put_pixel(x as u32, cur_thickness_y, color);
+                        self.put_pixel(y as u32, cur_thickness_x, color);
+                        x-=1;
+                        y-=1;
+                        }
+                    println!("veio pro lado maior !");
+                } else {
+                    if x_start >= x_end{
+                        // x axis is dominant
+                        while x >= x_end &&  y <= y_end{
+                        //implict clamp
+                        let cur_thickness_y = (y+i) as u32;
+                        let cur_thickness_x = (x+i) as u32;
+                        self.put_pixel(x as u32, cur_thickness_y, color);
+                        self.put_pixel(y as u32, cur_thickness_x, color);
+                        x-=1;
+                        y+=1;
+                        }
+                    println!("veio pro lado x eh maior !");
+                    }
+                    if y_start >= y_end{
+                        // y axis is dominant
+                        while x <= x_end &&  y >= y_end{
+                        //implict clamp
+                        let cur_thickness_y = (y+i) as u32;
+                        let cur_thickness_x = (x+i) as u32;
+                        self.put_pixel(x as u32, cur_thickness_y, color);
+                        self.put_pixel(y as u32, cur_thickness_x, color);
+                        x+=1;
+                        y-=1;
+                        }
+                        println!("veio pro lado y eh maior !");
+                    }
+                }
+            }
+    }
     pub fn draw_rectangle_unfilled(&mut self, x_ref_point: i32, y_ref_point: i32, width:i32, height:i32, thickness:i32, color:Color){
         //x_start and x_end indicate the width of the rectangle and y_pos where those lines will be drawn
         //although it is possible that is nescesserary to indicate a reference point for the shape
@@ -76,7 +135,8 @@ impl Render{
         self.draw_horizontal_line(x_coordinate_left_side - thickness, y_coordinate_down_side, x_coordinate_right_side + thickness, thickness, color);
         self.draw_horizontal_line(x_coordinate_left_side - thickness, y_coordinate_up_side, x_coordinate_right_side + thickness, thickness, color);
     }
-//  pub fn draw_rectangle_unfilled(&mut self, x_ref_point: i32, y_ref_point: i32, width:i32, height:i32, thickness:i32, outline_color:Color, inline_color::Color){}
+//  pub fn draw_rectangle_as_filled(&mut self, x_ref_point: i32, y_ref_point: i32, width:i32, height:i32, thickness:i32, outline_color:Color, inline_color::Color){}
+//  pub fn draw_triangle(&mut self, x_ref_point: i32, y_ref_point: i32, vertex1:i32, vertex2:i32, vertex3:i32, color:Color){}    
     /// Acesso somente-leitura ao buffer
     pub fn buffer(&self) -> &[Color]{
         &self.framebuffer.pixels_buffer
