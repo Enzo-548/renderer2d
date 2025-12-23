@@ -76,7 +76,8 @@ Make sure you have Rust installed and a platform supported by `minifb`.
 ---
 
 ## 🧠 Design Notes
-
+* The scope of this project is deliberately constrained to prioritize architectural clarity
+and explicit data flow over feature completeness or performance optimizations.
 * Rendering logic is **backend-agnostic**.
 * `minifb` is used only for prototyping and visualization.
 * All drawing happens on the CPU via the framebuffer.
@@ -93,7 +94,9 @@ Input → Render → Framebuffer → Window
 * Only one drawing primitive (`clear`)
 * No geometric primitives yet (lines, rectangles, etc.)
 * No coordinate transforms
-* CPU-only rendering
+* CPU-only rendering, as it is used intentionally to keep the pipeline explicit
+* Trade-offs favor simplicity and readability over raw performance
+
 
 These limitations are intentional at this stage.
 
@@ -111,7 +114,7 @@ These limitations are intentional at this stage.
 ## 📌 Motivation
 
 This project was built as a **learning exercise** for:
-
+* practicing Rust ownership, borrowing, and lifetimes in a renderer-style codebase
 * understanding low-level rendering concepts
 * practicing Rust ownership and modular design
 * experimenting with architectural decisions incrementally
