@@ -116,8 +116,7 @@ These limitations are intentional at this stage.
 This project was built as a **learning exercise** for:
 * applying Rust ownership, borrowing, and lifetimes in a renderer-style codebase
 * understanding low-level rendering concepts
-* practicing Rust ownership and modular design
-* experimenting with architectural decisions incrementally
+* practicing modular design and architectural trade-offs
 
 ---
 
