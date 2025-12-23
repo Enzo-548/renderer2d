@@ -114,7 +114,7 @@ These limitations are intentional at this stage.
 ## 📌 Motivation
 
 This project was built as a **learning exercise** for:
-* practicing Rust ownership, borrowing, and lifetimes in a renderer-style codebase
+* applying Rust ownership, borrowing, and lifetimes in a renderer-style codebase
 * understanding low-level rendering concepts
 * practicing Rust ownership and modular design
 * experimenting with architectural decisions incrementally
