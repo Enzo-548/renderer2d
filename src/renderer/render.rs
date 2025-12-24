@@ -27,16 +27,9 @@ impl Render{
         let index = (y*self.framebuffer.width + x) as usize;
         self.framebuffer.pixels_buffer[index] = color;
     }
-    //Generalized draw, should unify draw vertical and horizontal lines along the center of the canvas
-    /*pub fn draw_line(&mut self, mut x0:i32, x1:i32, mut y0:i32, y1:i32, size:i32, color: Color){
-        //aqui deveria receber o eixo de desenho, seja x ou  ou os dois
-        //mas e se depois eu quiser reutilizar para o mouse ?
-        //vai ter que passar os dois eixos
-        //x1 e y1 são limites no meu código
-        
-    }*/
+
     pub fn draw_vertical_line(&mut self, x: i32, y_start:i32, y_end:i32, thickness:i32, color: Color){
-        for i in -thickness..=thickness{
+        /*for i in -thickness..=thickness{
                 let mut y:i32 = y_start;
                 if y_start < y_end{
                 //less than size
@@ -55,10 +48,11 @@ impl Render{
                     y-=1;
                 }
             }
-        }
+        }*/
+        
     }
     pub fn draw_horizontal_line(&mut self, x_start:i32, y:i32, x_end:i32, thickness:i32, color: Color){
-        for i in -thickness..=thickness{
+        /*for i in -thickness..=thickness{
                 let mut x = x_start as i32;
                 if x_start < x_end{
                 //less than size
@@ -77,7 +71,7 @@ impl Render{
                         x-=1;
                     }
                 }
-            }
+            }*/
     }
     pub fn draw_perfect_diagonal_line(&mut self, x_start:i32, y_start:i32, x_end:i32, y_end:i32, thickness:i32, color: Color){
         for i in -thickness..=thickness{
