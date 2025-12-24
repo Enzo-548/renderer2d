@@ -27,8 +27,11 @@ impl Render{
         let index = (y*self.framebuffer.width + x) as usize;
         self.framebuffer.pixels_buffer[index] = color;
     }
+    pub fn draw_line(&mut self, x0:u32, y0:u32, x1:u32,y1:u32){
+        //draws !
+    }
 
-    pub fn draw_vertical_line(&mut self, x: i32, y_start:i32, y_end:i32, thickness:i32, color: Color){
+    pub fn draw_vertical_line(&mut self, x0:u32, y0:u32, x1:u32, y1:u32,thickness:i32, color: Color){
         /*for i in -thickness..=thickness{
                 let mut y:i32 = y_start;
                 if y_start < y_end{
@@ -51,7 +54,7 @@ impl Render{
         }*/
         
     }
-    pub fn draw_horizontal_line(&mut self, x_start:i32, y:i32, x_end:i32, thickness:i32, color: Color){
+    pub fn draw_horizontal_line(&mut self, x0:u32, y0:u32, x1:u32, y1:u32,thickness:i32, color: Color){
         /*for i in -thickness..=thickness{
                 let mut x = x_start as i32;
                 if x_start < x_end{
@@ -72,6 +75,7 @@ impl Render{
                     }
                 }
             }*/
+    
     }
     pub fn draw_perfect_diagonal_line(&mut self, x_start:i32, y_start:i32, x_end:i32, y_end:i32, thickness:i32, color: Color){
         for i in -thickness..=thickness{
@@ -132,7 +136,7 @@ impl Render{
                 }
             }
     }
-    pub fn draw_rectangle_unfilled(&mut self, x_ref_point: i32, y_ref_point: i32, width:i32, height:i32, thickness:i32, color:Color){
+  /*   pub fn draw_rectangle_unfilled(&mut self, x_ref_point: i32, y_ref_point: i32, width:i32, height:i32, thickness:i32, color:Color){
         //x_start and x_end indicate the width of the rectangle and y_pos where those lines will be drawn
         //although it is possible that is nescesserary to indicate a reference point for the shape
         //as the shape shall be drawn from this point and may dictate the height and width of the shape.
@@ -151,6 +155,8 @@ impl Render{
         self.draw_horizontal_line(x_coordinate_left_side - thickness, y_coordinate_down_side, x_coordinate_right_side + thickness, thickness, color);
         self.draw_horizontal_line(x_coordinate_left_side - thickness, y_coordinate_up_side, x_coordinate_right_side + thickness, thickness, color);
     }
+*/
+
 //  pub fn draw_rectangle_as_filled(&mut self, x_ref_point: i32, y_ref_point: i32, width:i32, height:i32, thickness:i32, outline_color:Color, inline_color::Color){}
 //  pub fn draw_triangle(&mut self, x_ref_point: i32, y_ref_point: i32, vertex1:i32, vertex2:i32, vertex3:i32, color:Color){}    
     /// Acesso somente-leitura ao buffer
