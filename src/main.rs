@@ -50,9 +50,9 @@ fn main() {
             count_but+=1;
         }
         if window.is_key_pressed(Key::Up, KeyRepeat::No){
-            //let mid_canvas = (render.framebuffer.width/2) as i32;    
-            //    render.draw_vertical_line(mid_canvas, 0, render.framebuffer.height as i32, 3, draw_color);
-            //    count_but+=1;
+            let mid_canvas = render.framebuffer.width/2;    
+                render.draw_vertical_line(mid_canvas, 0, mid_canvas, render.framebuffer.height, 3, draw_color);
+                count_but+=1;
         }
         if window.is_key_pressed(Key::Right, KeyRepeat::No){
             let mid_canvas = render.framebuffer.height/2;
