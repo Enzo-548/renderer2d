@@ -27,8 +27,9 @@ impl Render{
         let index = (y*self.framebuffer.width + x) as usize;
         self.framebuffer.pixels_buffer[index] = color;
     }
-    pub fn draw_line(&mut self, x0:u32, y0:u32, x1:u32,y1:u32){
+    pub fn draw_line(&mut self, x0:u32, y0:u32, x1:u32,y1:u32, thickness:i32, color: Color){
         //draws !
+
     }
 
     pub fn draw_vertical_line(&mut self, x0:u32, y0:u32, x1:u32, y1:u32,thickness:i32, color: Color){
@@ -75,7 +76,33 @@ impl Render{
                     }
                 }
             }*/
-    
+        if x0 > x1 {
+            let (x0,x1) = (x1,x0);
+            let (y0,y1) = (y1,y0);
+        }
+        let mut dx= (x1-x0) as i32;
+        let mut dy= (y1-y0) as i32;
+
+        let dir = {
+            if dy < 0{
+                -1
+            } else {
+                1
+            }
+        };
+        dy *= dir;
+        if dx != 0{
+            let mut y = y0;
+            let mut p = 2*dy - dx;
+            for i in dx..dx+1{
+                self.put_pixel(x0+(i as u32), y, color);
+                if p >= 0{
+                    y += dir as u32;
+                    p = p - 2*dx;
+                }
+            p = p + 2*dy;
+            }
+        }
     }
     pub fn draw_perfect_diagonal_line(&mut self, x_start:i32, y_start:i32, x_end:i32, y_end:i32, thickness:i32, color: Color){
         for i in -thickness..=thickness{
