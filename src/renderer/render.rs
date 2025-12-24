@@ -53,29 +53,38 @@ impl Render{
                 }
             }
         }*/
-        
+        if y0 > y1 {
+            let x0 = x1; let x1 = x0;
+            let y0 = y1; let y1 = y0;
+        }
+        let mut dx= (x1-x0) as i32;
+        let dy= (y1-y0) as i32;
+
+        let dir = {
+            if dy < 0{
+                -1
+            } else {
+                1
+            }
+        };
+        dx *= dir;
+        if dy != 0{
+            let mut x = x0;
+            let mut p = 2*dx - dy;
+            for i in -thickness..=thickness{
+            let cur_thickness:i32 = x as i32+i;
+            for j in -dy..dy+1{
+                self.put_pixel(cur_thickness as u32, j as u32, color);
+                if p >= 0{
+                    x += dir as u32;
+                    p = p - 2*dx;
+                }
+                p = p + 2*dy;
+                }
+            }
+        }
     }
     pub fn draw_horizontal_line(&mut self, x0:u32, y0:u32, x1:u32, y1:u32,thickness:i32, color: Color){
-        /*for i in -thickness..=thickness{
-                let mut x = x_start as i32;
-                if x_start < x_end{
-                //less than size
-                    while x <= x_end{
-                        //implict clamp
-                        let cur_thickness = (y+i) as u32;
-                        self.put_pixel(x as u32, cur_thickness, color);
-                        x+=1;
-                    }
-                } else {
-                //more than size
-                    while x >= x_end{
-                        //implict clamp
-                        let cur_thickness = (y+i) as u32;
-                        self.put_pixel(x as u32, cur_thickness, color);
-                        x-=1;
-                    }
-                }
-            }*/
         if x0 > x1 {
             let x0 = x1; let x1 = x0;
             let y0 = y1; let y1 = y0;
