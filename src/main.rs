@@ -55,9 +55,9 @@ fn main() {
             //    count_but+=1;
         }
         if window.is_key_pressed(Key::Right, KeyRepeat::No){
-            //let mid_canvas = (render.framebuffer.height/2) as i32;
-              //  render.draw_horizontal_line(0, mid_canvas, render.framebuffer.width as i32, 3, draw_color);
-                //count_but+=1;
+            let mid_canvas = render.framebuffer.height/2;
+            render.draw_horizontal_line(0, mid_canvas, render.framebuffer.width, mid_canvas, 3, draw_color);
+            count_but+=1;
         }
         if window.is_key_pressed(Key::Left, KeyRepeat::No){
                 //render.draw_perfect_diagonal_line(0, 0, render.framebuffer.width as i32, render.framebuffer.height as i32, 3, draw_color);

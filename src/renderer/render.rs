@@ -77,10 +77,10 @@ impl Render{
                 }
             }*/
         if x0 > x1 {
-            let (x0,x1) = (x1,x0);
-            let (y0,y1) = (y1,y0);
+            let x0 = x1; let x1 = x0;
+            let y0 = y1; let y1 = y0;
         }
-        let mut dx= (x1-x0) as i32;
+        let dx= (x1-x0) as i32;
         let mut dy= (y1-y0) as i32;
 
         let dir = {
@@ -94,13 +94,16 @@ impl Render{
         if dx != 0{
             let mut y = y0;
             let mut p = 2*dy - dx;
-            for i in dx..dx+1{
-                self.put_pixel(x0+(i as u32), y, color);
+            for i in -thickness..=thickness{
+            let cur_thickness:i32 = y as i32+i;
+            for j in -dx..dx+1{
+                self.put_pixel(x0+(j as u32), cur_thickness as u32, color);
                 if p >= 0{
                     y += dir as u32;
                     p = p - 2*dx;
                 }
-            p = p + 2*dy;
+                p = p + 2*dy;
+                }
             }
         }
     }
