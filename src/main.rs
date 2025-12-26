@@ -78,13 +78,13 @@ fn main() {
         if window.is_key_pressed(Key::S, KeyRepeat::No){
             let mid_width_canvas = (render.framebuffer.width/2) as i32;
             let mid_height_canvas = (render.framebuffer.height/2) as i32;
-            /*render.draw_rectangle_unfilled(
+            render.draw_rectangle_unfilled(
                 mid_width_canvas, 
                 mid_height_canvas, 
                 55, 
                 55, 
                 3, 
-                draw_color);*/
+                draw_color);
                 count_but+=1;
         }
 
