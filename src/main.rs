@@ -88,6 +88,15 @@ fn main() {
                 count_but+=1;
         }
 
+            if window.is_key_pressed(Key::T, KeyRepeat::No){
+            let mid_width_canvas = (render.framebuffer.width/2) as i32;
+            let mid_height_canvas = (render.framebuffer.height/2) as i32;
+            render.draw_triangle(
+                mid_width_canvas, mid_height_canvas-25,
+                mid_width_canvas-25, mid_height_canvas+25,
+                mid_width_canvas+25, mid_height_canvas+25, 10, draw_color);
+                count_but+=1;
+        }
         // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
         window
             .update_with_buffer(&render.framebuffer.as_u32_buffer(), render.framebuffer.width as usize, render.framebuffer.height as usize)
