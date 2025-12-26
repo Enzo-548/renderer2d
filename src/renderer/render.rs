@@ -27,154 +27,36 @@ impl Render{
         let index = (y*self.framebuffer.width + x) as usize;
         self.framebuffer.pixels_buffer[index] = color;
     }
-    pub fn draw_line(&mut self, x0:u32, y0:u32, x1:u32,y1:u32, thickness:i32, color: Color){
-        //draws !
+    pub fn draw_line(&mut self, x0:i32, y0:i32, x1:i32,y1:i32, thickness:i32, color: Color){
+        let dx:i32 = i32::abs(x1 - x0);
+        let dy:i32 = i32::abs(y1 - y0);
+        let sx:i32 = { if x0 < x1 { 1 } else { -1 } };
+        let sy:i32 = { if y0 < y1 { 1 } else { -1 } };
 
-    }
+        let mut error:i32 = (if dx > dy  { dx } else { -dy }) / 2 ;
 
-    pub fn draw_vertical_line(&mut self, x0:u32, y0:u32, x1:u32, y1:u32,thickness:i32, color: Color){
-        /*for i in -thickness..=thickness{
-                let mut y:i32 = y_start;
-                if y_start < y_end{
-                //less than size
-                while y <= y_end{
-                    //implict clamp
-                    let cur_thickness = (x+i) as u32;
-                    self.put_pixel(cur_thickness, y as u32, color);
-                    y+=1;
+        let mut x = x0;
+        let mut y = y0;
+            loop {
+            // desenha com thickness discreto
+            if dx >= dy {
+                for o in -thickness..=thickness {
+                    self.put_pixel(x as u32, (y + o) as u32, color);
                 }
             } else {
-                //more than size
-                    while y >= y_end{
-                    //implict clamp
-                    let cur_thickness = (x+i) as u32;
-                    self.put_pixel(cur_thickness, y as u32, color);
-                    y-=1;
+                for o in -thickness..=thickness {
+                    self.put_pixel((x + o) as u32, y as u32, color);
                 }
             }
-        }*/
-        if y0 > y1 {
-            let x0 = x1; let x1 = x0;
-            let y0 = y1; let y1 = y0;
-        }
-        let mut dx= (x1-x0) as i32;
-        let dy= (y1-y0) as i32;
 
-        let dir = {
-            if dy < 0{
-                -1
-            } else {
-                1
-            }
-        };
-        dx *= dir;
-        if dy != 0{
-            let mut x = x0;
-            let mut p = 2*dx - dy;
-            for i in -thickness..=thickness{
-            let cur_thickness:i32 = x as i32+i;
-            for j in -dy..dy+1{
-                self.put_pixel(cur_thickness as u32, j as u32, color);
-                if p >= 0{
-                    x += dir as u32;
-                    p = p - 2*dx;
-                }
-                p = p + 2*dy;
-                }
-            }
-        }
-    }
-    pub fn draw_horizontal_line(&mut self, x0:u32, y0:u32, x1:u32, y1:u32,thickness:i32, color: Color){
-        if x0 > x1 {
-            let x0 = x1; let x1 = x0;
-            let y0 = y1; let y1 = y0;
-        }
-        let dx= (x1-x0) as i32;
-        let mut dy= (y1-y0) as i32;
+            if x == x1 && y == y1 { break; }
 
-        let dir = {
-            if dy < 0{
-                -1
-            } else {
-                1
-            }
-        };
-        dy *= dir;
-        if dx != 0{
-            let mut y = y0;
-            let mut p = 2*dy - dx;
-            for i in -thickness..=thickness{
-            let cur_thickness:i32 = y as i32+i;
-            for j in -dx..dx+1{
-                self.put_pixel(x0+(j as u32), cur_thickness as u32, color);
-                if p >= 0{
-                    y += dir as u32;
-                    p = p - 2*dx;
-                }
-                p = p + 2*dy;
-                }
-            }
+            let e2 = 2 * error;
+            if e2 > -dy { error -= dy; x += sx; }
+            if e2 <  dx { error += dx; y += sy; }
         }
     }
-    pub fn draw_perfect_diagonal_line(&mut self, x_start:i32, y_start:i32, x_end:i32, y_end:i32, thickness:i32, color: Color){
-        for i in -thickness..=thickness{
-                let mut x = x_start as i32;
-                let mut y = y_start as i32;
-                if x_start < x_end && y_start < y_end{
-                    //less than size
-                    while x <= x_end &&  y <= y_end{
-                        //implict clamp
-                        let cur_thickness_y = (y+i) as u32;
-                        let cur_thickness_x = (x+i) as u32;
-                        self.put_pixel(x as u32, cur_thickness_y, color);
-                        self.put_pixel(y as u32, cur_thickness_x, color);
-                        x+=1;
-                        y+=1;
-                        }
-                println!("veio pro lado menor !")
-                } 
-                if  x_start > x_end && y_start > y_end{
-                    //more than size
-                    while x >= x_end &&  y >= y_end{
-                        //implict clamp
-                        let cur_thickness_y = (y+i) as u32;
-                        let cur_thickness_x = (x+i) as u32;
-                        self.put_pixel(x as u32, cur_thickness_y, color);
-                        self.put_pixel(y as u32, cur_thickness_x, color);
-                        x-=1;
-                        y-=1;
-                        }
-                    println!("veio pro lado maior !");
-                } else {
-                    if x_start >= x_end{
-                        // x axis is dominant
-                        while x >= x_end &&  y <= y_end{
-                        //implict clamp
-                        let cur_thickness_y = (y+i) as u32;
-                        let cur_thickness_x = (x+i) as u32;
-                        self.put_pixel(x as u32, cur_thickness_y, color);
-                        self.put_pixel(y as u32, cur_thickness_x, color);
-                        x-=1;
-                        y+=1;
-                        }
-                    println!("veio pro lado x eh maior !");
-                    }
-                    if y_start >= y_end{
-                        // y axis is dominant
-                        while x <= x_end &&  y >= y_end{
-                        //implict clamp
-                        let cur_thickness_y = (y+i) as u32;
-                        let cur_thickness_x = (x+i) as u32;
-                        self.put_pixel(x as u32, cur_thickness_y, color);
-                        self.put_pixel(y as u32, cur_thickness_x, color);
-                        x+=1;
-                        y-=1;
-                        }
-                        println!("veio pro lado y eh maior !");
-                    }
-                }
-            }
-    }
+
   /*   pub fn draw_rectangle_unfilled(&mut self, x_ref_point: i32, y_ref_point: i32, width:i32, height:i32, thickness:i32, color:Color){
         //x_start and x_end indicate the width of the rectangle and y_pos where those lines will be drawn
         //although it is possible that is nescesserary to indicate a reference point for the shape
@@ -197,7 +79,7 @@ impl Render{
 */
 
 //  pub fn draw_rectangle_as_filled(&mut self, x_ref_point: i32, y_ref_point: i32, width:i32, height:i32, thickness:i32, outline_color:Color, inline_color::Color){}
-//  pub fn draw_triangle(&mut self, x_ref_point: i32, y_ref_point: i32, vertex1:i32, vertex2:i32, vertex3:i32, color:Color){}    
+//  pub fn draw_triangle(&mut self, x_ref_point: i32, y_ref_point: i32, vertex1:i32, vertex1:i32, vertex3:i32, color:Color){}    
     /// Acesso somente-leitura ao buffer
     pub fn buffer(&self) -> &[Color]{
         &self.framebuffer.pixels_buffer
