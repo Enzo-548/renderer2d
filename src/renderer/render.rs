@@ -80,7 +80,17 @@ impl Render{
 
 
 //  pub fn draw_rectangle_as_filled(&mut self, x_ref_point: i32, y_ref_point: i32, width:i32, height:i32, thickness:i32, outline_color:Color, inline_color::Color){}
-//  pub fn draw_triangle(&mut self, x_ref_point: i32, y_ref_point: i32, vertex1:i32, vertex1:i32, vertex3:i32, color:Color){}    
+  pub fn draw_triangle(&mut self, 
+    x_ref_vertex1:i32, y_ref_vertex1:i32,
+    x_ref_vertex2:i32, y_ref_vertex2:i32, 
+    x_ref_vertex3:i32, y_ref_vertex3:i32, thickness: i32, color:Color){
+        self.draw_line(x_ref_vertex1, y_ref_vertex1, x_ref_vertex2, y_ref_vertex2, thickness, color);
+        self.draw_line(x_ref_vertex1, y_ref_vertex1, x_ref_vertex3, y_ref_vertex3, thickness, color);
+        self.draw_line(x_ref_vertex2, y_ref_vertex2, x_ref_vertex3, y_ref_vertex3, thickness, color);
+        self.draw_line(x_ref_vertex2, y_ref_vertex2, x_ref_vertex1, y_ref_vertex1, thickness, color);
+        self.draw_line(x_ref_vertex3, y_ref_vertex3, x_ref_vertex1, y_ref_vertex1, thickness, color);
+        self.draw_line(x_ref_vertex3, y_ref_vertex3, x_ref_vertex2, y_ref_vertex2, thickness, color);
+    }    
     /// Acesso somente-leitura ao buffer
     pub fn buffer(&self) -> &[Color]{
         &self.framebuffer.pixels_buffer
