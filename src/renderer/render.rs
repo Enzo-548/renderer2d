@@ -27,6 +27,17 @@ impl Render{
         let index = (y*self.framebuffer.width + x) as usize;
         self.framebuffer.pixels_buffer[index] = color;
     }
+
+    pub fn return_pixel(&mut self, x:u32, y:u32) -> Option<&Color>{
+            if x>= self.framebuffer.width || y>= self.framebuffer.height {
+            return None;
+        } else {
+            let index = (y*self.framebuffer.width + x) as usize;
+            let col_ref = &self.framebuffer.pixels_buffer[index];
+            return Some(col_ref);
+        }
+    }
+
     pub fn draw_line(&mut self, x0:i32, y0:i32, x1:i32,y1:i32, thickness:i32, color: Color){
         let dx:i32 = i32::abs(x1 - x0);
         let dy:i32 = i32::abs(y1 - y0);
@@ -94,7 +105,12 @@ impl Render{
         self.draw_line(x_coordinate_left_side,y_coordinate_down_side - thickness, x_coordinate_left_side, y_coordinate_up_side + thickness,thickness,outline_color);
         self.draw_line(x_coordinate_left_side - thickness, y_coordinate_down_side, x_coordinate_right_side + thickness, y_coordinate_down_side, thickness, outline_color);
         self.draw_line(x_coordinate_left_side - thickness, y_coordinate_up_side, x_coordinate_right_side + thickness, y_coordinate_up_side, thickness, outline_color);
-        
+
+        /*for mut i in 0..self.framebuffer.pixels_buffer.len()-1{
+            let curr_color = self.framebuffer.pixels_buffer[i];
+            
+            
+        }        */
   }
   pub fn draw_triangle(&mut self, 
     x_ref_vertex1:i32, y_ref_vertex1:i32,
