@@ -79,17 +79,31 @@ impl Render{
     }
 
 
-//  pub fn draw_rectangle_as_filled(&mut self, x_ref_point: i32, y_ref_point: i32, width:i32, height:i32, thickness:i32, outline_color:Color, inline_color::Color){}
+  pub fn draw_rectangle_as_filled(&mut self, x_ref_point: i32, y_ref_point: i32, width:i32, height:i32, thickness:i32, outline_color:Color, inline_color:Color){
+
+        //rightside
+        let x_coordinate_right_side = x_ref_point+width; //355
+        //leftside
+        let x_coordinate_left_side = x_ref_point-width; //245
+        //upline
+        let y_coordinate_up_side = y_ref_point+height;
+        //downline
+        let y_coordinate_down_side = y_ref_point-height;
+
+        self.draw_line(x_coordinate_right_side, y_coordinate_down_side - thickness, x_coordinate_right_side, y_coordinate_up_side + thickness, thickness, outline_color);
+        self.draw_line(x_coordinate_left_side,y_coordinate_down_side - thickness, x_coordinate_left_side, y_coordinate_up_side + thickness,thickness,outline_color);
+        self.draw_line(x_coordinate_left_side - thickness, y_coordinate_down_side, x_coordinate_right_side + thickness, y_coordinate_down_side, thickness, outline_color);
+        self.draw_line(x_coordinate_left_side - thickness, y_coordinate_up_side, x_coordinate_right_side + thickness, y_coordinate_up_side, thickness, outline_color);
+        
+  }
   pub fn draw_triangle(&mut self, 
     x_ref_vertex1:i32, y_ref_vertex1:i32,
     x_ref_vertex2:i32, y_ref_vertex2:i32, 
     x_ref_vertex3:i32, y_ref_vertex3:i32, thickness: i32, color:Color){
+        //implementar um fix para desenhar nas bordas usando um circulo cheio
         self.draw_line(x_ref_vertex1, y_ref_vertex1, x_ref_vertex2, y_ref_vertex2, thickness, color);
         self.draw_line(x_ref_vertex1, y_ref_vertex1, x_ref_vertex3, y_ref_vertex3, thickness, color);
         self.draw_line(x_ref_vertex2, y_ref_vertex2, x_ref_vertex3, y_ref_vertex3, thickness, color);
-        self.draw_line(x_ref_vertex2, y_ref_vertex2, x_ref_vertex1, y_ref_vertex1, thickness, color);
-        self.draw_line(x_ref_vertex3, y_ref_vertex3, x_ref_vertex1, y_ref_vertex1, thickness, color);
-        self.draw_line(x_ref_vertex3, y_ref_vertex3, x_ref_vertex2, y_ref_vertex2, thickness, color);
     }    
     /// Acesso somente-leitura ao buffer
     pub fn buffer(&self) -> &[Color]{
