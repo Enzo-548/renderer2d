@@ -128,41 +128,25 @@ impl Render{
         &self.framebuffer.pixels_buffer
     }
     pub fn fill(&mut self, x_ref_point: u32, y_ref_point: u32, color: Color){
-        let mut pix_vec:Vec<&mut Color> = Vec::new();
-        let paint_col = *self.return_pixel(x_ref_point, y_ref_point).expect("color");
-        let mut y = y_ref_point;
-        let height = self.framebuffer.height; let width = self.framebuffer.width;
-        while y < height{        
-            let mut x = x_ref_point;
-            while x < width{
-            let cur_address = self.return_pixel(x, y);
-            x+=1;
-            match cur_address{
-                Some(addr) => {
-                    if *addr == color || *addr != paint_col{
-                        if x >= width || y>=height{
-                            return;
-                        }
-                        let pix = *self.return_pixel(x_ref_point, y+1).expect("eh cor");
-                        if pix == color || pix != paint_col{
-                            if pix != paint_col{
-                                return;
-                            }
-                            return;
-                        }
-                        break;
-                    }
-                    println!("cor eh sla :{addr:?}");
-                    *addr = color;
-                }
-                None => {
-                    //PROBLEMÃO AQUI
-                    println!("achou nada !");
-                    return;
-                }
-            }
-        }
-            y+=1;
+        let paint_col = *self.return_pixel(x_ref_point, y_ref_point).unwrap();
+        if paint_col == color { return; }
+
+        let mut stack = Vec::new();
+        stack.push((x_ref_point as i32, y_ref_point as i32));
+
+        while let Some((x, y)) = stack.pop() {
+        if x < 0 || y < 0 { continue; }
+        if x >= self.framebuffer.width as i32 || y >= self.framebuffer.height as i32 { continue; }
+
+        let pixel = self.return_pixel(x as u32, y as u32).unwrap();
+        if *pixel != paint_col { continue; }
+
+        *pixel = color;
+
+        stack.push((x + 1, y));
+        stack.push((x - 1, y));
+        stack.push((x, y + 1));
+        stack.push((x, y - 1));
         }
     }
 
