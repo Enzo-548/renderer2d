@@ -6,7 +6,7 @@ use crate::renderer::{color::{self, Color}, framebuffer::Framebuffer, render::Re
 fn main() {
     println!("Hello, world!");
     let buffer = Framebuffer::new(600, 600);
-    let mut render: Render = Render::new(buffer);
+    let mut render: Render = Render::new(buffer, Color::ZERO);
     let mut window = Window::new(
         "Test - ESC to exit",
         render.framebuffer.width as usize,
@@ -83,12 +83,27 @@ fn main() {
                 mid_height_canvas, 
                 55, 
                 55, 
-                3, 
+                0, 
                 draw_color);
                 count_but+=1;
+                /*if window.is_key_pressed(Key::S, KeyRepeat::No){
+                render.draw_rectangle_unfilled(
+                mid_width_canvas, 
+                mid_height_canvas, 
+                55, 
+                55, 
+                25, 
+                draw_color);
+                count_but+=1; }*/
+        }
+        if window.is_key_pressed(Key::C, KeyRepeat::No){
+            let mid_width_canvas = (render.framebuffer.width/2) as i32;
+            let mid_height_canvas = (render.framebuffer.height/2) as i32;
+            render.draw_circle(mid_width_canvas, mid_height_canvas, 500, draw_color);
+            count_but += 1;
         }
 
-            if window.is_key_pressed(Key::T, KeyRepeat::No){
+        if window.is_key_pressed(Key::T, KeyRepeat::No){
             let mid_width_canvas = (render.framebuffer.width/2) as i32;
             let mid_height_canvas = (render.framebuffer.height/2) as i32;
             render.draw_triangle(
@@ -97,6 +112,14 @@ fn main() {
                 mid_width_canvas+25, mid_height_canvas+25, 10, draw_color);
                 count_but+=1;
         }
+        
+        if window.is_key_pressed(Key::F, KeyRepeat::No){
+            let mid_width_canvas = render.framebuffer.width/2;
+            let mid_height_canvas = render.framebuffer.height/2;
+            render.fill(mid_width_canvas, mid_height_canvas, draw_color);
+            count_but+=1;
+        }
+
         // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
         window
             .update_with_buffer(&render.framebuffer.as_u32_buffer(), render.framebuffer.width as usize, render.framebuffer.height as usize)

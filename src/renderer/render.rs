@@ -17,6 +17,7 @@ impl Render{
         for pixel in &mut self.framebuffer.pixels_buffer{
             *pixel = color;
         }
+        self.background_color = color;
     }
     /// Desenha um pixel (com bounds check)
     pub fn put_pixel(&mut self, x:u32, y:u32, color: Color){
@@ -125,5 +126,68 @@ impl Render{
     /// Acesso somente-leitura ao buffer
     pub fn buffer(&self) -> &[Color]{
         &self.framebuffer.pixels_buffer
+    }
+    pub fn fill(&mut self, x_ref_point: u32, y_ref_point: u32, color: Color){
+        let mut pix_vec:Vec<&mut Color> = Vec::new();
+        let paint_col = *self.return_pixel(x_ref_point, y_ref_point).expect("color");
+        let mut y = y_ref_point;
+        let height = self.framebuffer.height; let width = self.framebuffer.width;
+        while y < height{        
+            let mut x = x_ref_point;
+            while x < width{
+            let cur_address = self.return_pixel(x, y);
+            x+=1;
+            match cur_address{
+                Some(addr) => {
+                    if *addr == color || *addr != paint_col{
+                        if x >= width || y>=height{
+                            return;
+                        }
+                        let pix = *self.return_pixel(x_ref_point, y+1).expect("eh cor");
+                        if pix == color || pix != paint_col{
+                            if pix != paint_col{
+                                return;
+                            }
+                            return;
+                        }
+                        break;
+                    }
+                    println!("cor eh sla :{addr:?}");
+                    *addr = color;
+                }
+                None => {
+                    //PROBLEMÃO AQUI
+                    println!("achou nada !");
+                    return;
+                }
+            }
+        }
+            y+=1;
+        }
+    }
+
+
+    pub fn draw_circle(&mut self, cx:i32, cy:i32, r: i32, color: Color){
+        let mut x = 0;
+        let mut y = -r;
+        let mut p = -r;
+        while x < -y {
+            if p < 0{
+                y += 1;
+                p += 2+(x+y) + 1;
+            } else {
+                p += 2*x + 1;
+            }
+            self.put_pixel((cx+x) as u32, (cy+y) as u32, color);
+            self.put_pixel((cx-x) as u32, (cy+y) as u32, color);
+            self.put_pixel((cx+x) as u32, (cy-y) as u32, color);
+            self.put_pixel((cx-x) as u32, (cy-y) as u32, color);
+            self.put_pixel((cx+x) as u32, (cy+y) as u32, color);
+            self.put_pixel((cx+x) as u32, (cy-y) as u32, color);
+            self.put_pixel((cx-x) as u32, (cy+y) as u32, color);
+            self.put_pixel((cx-x) as u32, (cy-y) as u32, color);
+
+            x += 1;
+        }
     }
 }
