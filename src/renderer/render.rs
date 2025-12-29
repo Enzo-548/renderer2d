@@ -3,13 +3,14 @@ use crate::renderer::{color::Color, framebuffer::{*}};
 #[derive (Debug)]
 pub struct Render{
     pub framebuffer : Framebuffer,
+    pub background_color : Color,
     //window??
 }
 
-impl Render{  
+impl Render{
     /// Cria o renderer com um framebuffer inicial
-    pub fn new(framebuffer: Framebuffer) -> Render{
-        return Self { framebuffer };
+    pub fn new(framebuffer: Framebuffer, background_color:Color) -> Render{
+        return Self { framebuffer, background_color};
     }
     /// Limpa o framebuffer com uma cor
     pub fn clear(&mut self, color: Color){
@@ -28,12 +29,12 @@ impl Render{
         self.framebuffer.pixels_buffer[index] = color;
     }
 
-    pub fn return_pixel(&mut self, x:u32, y:u32) -> Option<&Color>{
+    pub fn return_pixel(&mut self, x:u32, y:u32) -> Option<&mut Color>{
             if x>= self.framebuffer.width || y>= self.framebuffer.height {
             return None;
         } else {
             let index = (y*self.framebuffer.width + x) as usize;
-            let col_ref = &self.framebuffer.pixels_buffer[index];
+            let col_ref = &mut self.framebuffer.pixels_buffer[index];
             return Some(col_ref);
         }
     }
