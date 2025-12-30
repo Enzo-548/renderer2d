@@ -6,7 +6,7 @@ use crate::renderer::{color::{self, Color}, framebuffer::Framebuffer, render::Re
 fn main() {
     println!("Hello, world!");
     let buffer = Framebuffer::new(600, 600);
-    let mut render: Render = Render::new(buffer);
+    let mut render: Render = Render::new(buffer, Color::ZERO);
     let mut window = Window::new(
         "Test - ESC to exit",
         render.framebuffer.width as usize,
@@ -50,21 +50,21 @@ fn main() {
             count_but+=1;
         }
         if window.is_key_pressed(Key::Up, KeyRepeat::No){
-            let mid_canvas = (render.framebuffer.width/2) as i32;    
-                render.draw_vertical_line(mid_canvas, 0, render.framebuffer.height as i32, 3, draw_color);
+            let mid_canvas= render.framebuffer.width as i32/2;    
+                render.draw_line(mid_canvas, 0, mid_canvas, render.framebuffer.height as i32, 3, draw_color);
                 count_but+=1;
         }
         if window.is_key_pressed(Key::Right, KeyRepeat::No){
-            let mid_canvas = (render.framebuffer.height/2) as i32;
-                render.draw_horizontal_line(0, mid_canvas, render.framebuffer.width as i32, 3, draw_color);
+            let mid_canvas = render.framebuffer.height as i32/2;
+                render.draw_line(0, mid_canvas, render.framebuffer.width as i32, mid_canvas, 3, draw_color);
                 count_but+=1;
         }
         if window.is_key_pressed(Key::Left, KeyRepeat::No){
-                render.draw_perfect_diagonal_line(0, 0, render.framebuffer.width as i32, render.framebuffer.height as i32, 3, draw_color);
+                render.draw_line(0, 0, render.framebuffer.width as i32, render.framebuffer.height as i32, 3, draw_color);
                 count_but+=1;
         }
         if window.is_key_pressed(Key::Down, KeyRepeat::No){
-                render.draw_perfect_diagonal_line(render.framebuffer.width as i32, 0, 0, render.framebuffer.height as i32, 3, draw_color);
+                render.draw_line(render.framebuffer.width as i32, 0, 0, render.framebuffer.height as i32, 3, draw_color);
                 count_but+=1;
         }
         if window.is_key_pressed(Key::RightShift, KeyRepeat::No){
@@ -78,14 +78,38 @@ fn main() {
         if window.is_key_pressed(Key::S, KeyRepeat::No){
             let mid_width_canvas = (render.framebuffer.width/2) as i32;
             let mid_height_canvas = (render.framebuffer.height/2) as i32;
-            render.draw_rectangle_unfilled(
+            render.draw_rectangle(
                 mid_width_canvas, 
                 mid_height_canvas, 
                 55, 
-                55, 
+                55,
+                false,
                 3, 
                 draw_color);
                 count_but+=1;
+        }
+        if window.is_key_pressed(Key::C, KeyRepeat::No){
+            let mid_width_canvas = (render.framebuffer.width/2) as i32;
+            let mid_height_canvas = (render.framebuffer.height/2) as i32;
+            render.draw_circle(mid_width_canvas, mid_height_canvas, 50, false, 3, draw_color);
+            count_but += 1;
+        }
+
+        if window.is_key_pressed(Key::T, KeyRepeat::No){
+            let mid_width_canvas = (render.framebuffer.width/2) as i32;
+            let mid_height_canvas = (render.framebuffer.height/2) as i32;
+            render.draw_triangle(
+                mid_width_canvas, mid_height_canvas-50,
+                mid_width_canvas-50, mid_height_canvas+50,
+                mid_width_canvas+50, mid_height_canvas+50, false, 20, draw_color);
+                count_but+=1;
+        }
+        
+        if window.is_key_pressed(Key::F, KeyRepeat::No){
+            let mid_width_canvas = render.framebuffer.width/2;
+            let mid_height_canvas = render.framebuffer.height/2;
+            render.fill(mid_width_canvas, mid_height_canvas, draw_color);
+            count_but+=1;
         }
 
         // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way

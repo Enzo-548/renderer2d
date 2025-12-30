@@ -3,19 +3,21 @@ use crate::renderer::{color::Color, framebuffer::{*}};
 #[derive (Debug)]
 pub struct Render{
     pub framebuffer : Framebuffer,
+    pub background_color : Color,
     //window??
 }
 
-impl Render{  
+impl Render{
     /// Cria o renderer com um framebuffer inicial
-    pub fn new(framebuffer: Framebuffer) -> Render{
-        return Self { framebuffer };
+    pub fn new(framebuffer: Framebuffer, background_color:Color) -> Render{
+        return Self { framebuffer, background_color};
     }
     /// Limpa o framebuffer com uma cor
     pub fn clear(&mut self, color: Color){
         for pixel in &mut self.framebuffer.pixels_buffer{
             *pixel = color;
         }
+        self.background_color = color;
     }
     /// Desenha um pixel (com bounds check)
     pub fn put_pixel(&mut self, x:u32, y:u32, color: Color){
@@ -27,118 +29,48 @@ impl Render{
         let index = (y*self.framebuffer.width + x) as usize;
         self.framebuffer.pixels_buffer[index] = color;
     }
-    //Generalized draw, should unify draw vertical and horizontal lines along the center of the canvas
-    /*pub fn draw_line(&mut self, mut x0:i32, x1:i32, mut y0:i32, y1:i32, size:i32, color: Color){
-        //aqui deveria receber o eixo de desenho, seja x ou  ou os dois
-        //mas e se depois eu quiser reutilizar para o mouse ?
-        //vai ter que passar os dois eixos
-        //x1 e y1 são limites no meu código
-        
-    }*/
-    pub fn draw_vertical_line(&mut self, x: i32, y_start:i32, y_end:i32, thickness:i32, color: Color){
-        for i in -thickness..=thickness{
-                let mut y:i32 = y_start;
-                if y_start < y_end{
-                //less than size
-                while y <= y_end{
-                    //implict clamp
-                    let cur_thickness = (x+i) as u32;
-                    self.put_pixel(cur_thickness, y as u32, color);
-                    y+=1;
-                }
-            } else {
-                //more than size
-                    while y >= y_end{
-                    //implict clamp
-                    let cur_thickness = (x+i) as u32;
-                    self.put_pixel(cur_thickness, y as u32, color);
-                    y-=1;
-                }
-            }
+
+    pub fn return_pixel(&mut self, x:u32, y:u32) -> Option<&mut Color>{
+            if x>= self.framebuffer.width || y>= self.framebuffer.height {
+            return None;
+        } else {
+            let index = (y*self.framebuffer.width + x) as usize;
+            let col_ref = &mut self.framebuffer.pixels_buffer[index];
+            return Some(col_ref);
         }
     }
-    pub fn draw_horizontal_line(&mut self, x_start:i32, y:i32, x_end:i32, thickness:i32, color: Color){
-        for i in -thickness..=thickness{
-                let mut x = x_start as i32;
-                if x_start < x_end{
-                //less than size
-                    while x <= x_end{
-                        //implict clamp
-                        let cur_thickness = (y+i) as u32;
-                        self.put_pixel(x as u32, cur_thickness, color);
-                        x+=1;
-                    }
-                } else {
-                //more than size
-                    while x >= x_end{
-                        //implict clamp
-                        let cur_thickness = (y+i) as u32;
-                        self.put_pixel(x as u32, cur_thickness, color);
-                        x-=1;
-                    }
+
+    pub fn draw_line(&mut self, x0:i32, y0:i32, x1:i32,y1:i32, thickness:i32, color: Color){
+        let dx:i32 = i32::abs(x1 - x0);
+        let dy:i32 = i32::abs(y1 - y0);
+        let sx:i32 = { if x0 < x1 { 1 } else { -1 } };
+        let sy:i32 = { if y0 < y1 { 1 } else { -1 } };
+
+        let mut error:i32 = (if dx > dy  { dx } else { -dy }) / 2 ;
+
+        let mut x = x0;
+        let mut y = y0;
+            loop {
+            // desenha com thickness discreto
+            if dx >= dy {
+                for o in -thickness..=thickness {
+                    self.put_pixel(x as u32, (y + o) as u32, color);
+                }
+            } else {
+                for o in -thickness..=thickness {
+                    self.put_pixel((x + o) as u32, y as u32, color);
                 }
             }
+
+            if x == x1 && y == y1 { break; }
+
+            let e2 = 2 * error;
+            if e2 > -dy { error -= dy; x += sx; }
+            if e2 <  dx { error += dx; y += sy; }
+        }
     }
-    pub fn draw_perfect_diagonal_line(&mut self, x_start:i32, y_start:i32, x_end:i32, y_end:i32, thickness:i32, color: Color){
-        for i in -thickness..=thickness{
-                let mut x = x_start as i32;
-                let mut y = y_start as i32;
-                if x_start < x_end && y_start < y_end{
-                    //less than size
-                    while x <= x_end &&  y <= y_end{
-                        //implict clamp
-                        let cur_thickness_y = (y+i) as u32;
-                        let cur_thickness_x = (x+i) as u32;
-                        self.put_pixel(x as u32, cur_thickness_y, color);
-                        self.put_pixel(y as u32, cur_thickness_x, color);
-                        x+=1;
-                        y+=1;
-                        }
-                println!("veio pro lado menor !")
-                } 
-                if  x_start > x_end && y_start > y_end{
-                    //more than size
-                    while x >= x_end &&  y >= y_end{
-                        //implict clamp
-                        let cur_thickness_y = (y+i) as u32;
-                        let cur_thickness_x = (x+i) as u32;
-                        self.put_pixel(x as u32, cur_thickness_y, color);
-                        self.put_pixel(y as u32, cur_thickness_x, color);
-                        x-=1;
-                        y-=1;
-                        }
-                    println!("veio pro lado maior !");
-                } else {
-                    if x_start >= x_end{
-                        // x axis is dominant
-                        while x >= x_end &&  y <= y_end{
-                        //implict clamp
-                        let cur_thickness_y = (y+i) as u32;
-                        let cur_thickness_x = (x+i) as u32;
-                        self.put_pixel(x as u32, cur_thickness_y, color);
-                        self.put_pixel(y as u32, cur_thickness_x, color);
-                        x-=1;
-                        y+=1;
-                        }
-                    println!("veio pro lado x eh maior !");
-                    }
-                    if y_start >= y_end{
-                        // y axis is dominant
-                        while x <= x_end &&  y >= y_end{
-                        //implict clamp
-                        let cur_thickness_y = (y+i) as u32;
-                        let cur_thickness_x = (x+i) as u32;
-                        self.put_pixel(x as u32, cur_thickness_y, color);
-                        self.put_pixel(y as u32, cur_thickness_x, color);
-                        x+=1;
-                        y-=1;
-                        }
-                        println!("veio pro lado y eh maior !");
-                    }
-                }
-            }
-    }
-    pub fn draw_rectangle_unfilled(&mut self, x_ref_point: i32, y_ref_point: i32, width:i32, height:i32, thickness:i32, color:Color){
+
+     pub fn draw_rectangle(&mut self, x_ref_point: i32, y_ref_point: i32, width:i32, height:i32, is_filled:bool, thickness:i32, color:Color){
         //x_start and x_end indicate the width of the rectangle and y_pos where those lines will be drawn
         //although it is possible that is nescesserary to indicate a reference point for the shape
         //as the shape shall be drawn from this point and may dictate the height and width of the shape.
@@ -152,15 +84,93 @@ impl Render{
         let y_coordinate_up_side = y_ref_point+height;
         //downline
         let y_coordinate_down_side = y_ref_point-height;
-        self.draw_vertical_line (x_coordinate_right_side,y_coordinate_down_side - thickness,y_coordinate_up_side + thickness,thickness,color);
-        self.draw_vertical_line (x_coordinate_left_side,y_coordinate_down_side - thickness,y_coordinate_up_side + thickness,thickness,color);
-        self.draw_horizontal_line(x_coordinate_left_side - thickness, y_coordinate_down_side, x_coordinate_right_side + thickness, thickness, color);
-        self.draw_horizontal_line(x_coordinate_left_side - thickness, y_coordinate_up_side, x_coordinate_right_side + thickness, thickness, color);
+        //self.draw_line(x0, y0, x1, y1, thickness, color);
+        self.draw_line(x_coordinate_right_side, y_coordinate_down_side - thickness, x_coordinate_right_side, y_coordinate_up_side + thickness, thickness, color);
+        self.draw_line(x_coordinate_left_side,y_coordinate_down_side - thickness, x_coordinate_left_side, y_coordinate_up_side + thickness,thickness,color);
+        self.draw_line(x_coordinate_left_side - thickness, y_coordinate_down_side, x_coordinate_right_side + thickness, y_coordinate_down_side, thickness, color);
+        self.draw_line(x_coordinate_left_side - thickness, y_coordinate_up_side, x_coordinate_right_side + thickness, y_coordinate_up_side, thickness, color);
+        
+        if is_filled == true{
+            self.fill(x_ref_point as u32, y_ref_point as u32, color);
+        }
     }
-//  pub fn draw_rectangle_as_filled(&mut self, x_ref_point: i32, y_ref_point: i32, width:i32, height:i32, thickness:i32, outline_color:Color, inline_color::Color){}
-//  pub fn draw_triangle(&mut self, x_ref_point: i32, y_ref_point: i32, vertex1:i32, vertex2:i32, vertex3:i32, color:Color){}    
+
+  pub fn draw_triangle(&mut self, 
+    x_ref_vertex1:i32, y_ref_vertex1:i32,
+    x_ref_vertex2:i32, y_ref_vertex2:i32, 
+    x_ref_vertex3:i32, y_ref_vertex3:i32, is_filled:bool, thickness: i32, color:Color){
+        
+        let r = thickness*2 / 2;
+
+        self.draw_circle(x_ref_vertex1, y_ref_vertex1+3, r, true, 0, color);
+        self.draw_circle(x_ref_vertex2+1, y_ref_vertex2, r, true, 0, color);
+        self.draw_circle(x_ref_vertex3-1, y_ref_vertex3, r, true, 0, color);
+
+        
+        //implementar um fix para desenhar nas bordas usando um circulo cheio
+        self.draw_line(x_ref_vertex1, y_ref_vertex1, x_ref_vertex2, y_ref_vertex2, thickness, color);
+        self.draw_line(x_ref_vertex1, y_ref_vertex1, x_ref_vertex3, y_ref_vertex3, thickness, color);
+        self.draw_line(x_ref_vertex2, y_ref_vertex2, x_ref_vertex3, y_ref_vertex3, thickness, color);
+
+        
+        if is_filled == true{
+            let center_x = (x_ref_vertex1 + x_ref_vertex2 + x_ref_vertex3) / 3;
+            let center_y = (y_ref_vertex1 + y_ref_vertex2 + y_ref_vertex3) / 3;
+            self.fill(center_x as u32, center_y as u32, color);
+        }
+    }    
     /// Acesso somente-leitura ao buffer
     pub fn buffer(&self) -> &[Color]{
         &self.framebuffer.pixels_buffer
+    }
+    pub fn fill(&mut self, x_ref_point: u32, y_ref_point: u32, color: Color){
+        let paint_col = *self.return_pixel(x_ref_point, y_ref_point).unwrap();
+        if paint_col == color { return; }
+
+        let mut stack = Vec::new();
+        stack.push((x_ref_point as i32, y_ref_point as i32));
+
+        while let Some((x, y)) = stack.pop() {
+        if x < 0 || y < 0 { continue; }
+        if x >= self.framebuffer.width as i32 || y >= self.framebuffer.height as i32 { continue; }
+
+        let pixel = self.return_pixel(x as u32, y as u32).unwrap();
+        if *pixel != paint_col { continue; }
+
+        *pixel = color;
+
+        stack.push((x + 1, y));
+        stack.push((x - 1, y));
+        stack.push((x, y + 1));
+        stack.push((x, y - 1));
+        }
+    }
+
+    pub fn draw_circle(&mut self, cx:i32, cy:i32, r: i32, is_filled:bool, thickness: i32, color: Color){
+        let mut x = 0;
+        let mut y = -r;
+        let mut p = -r;
+            while x < -y {  
+                if p > 0{
+                    y += 1;
+                    p += 2*(x+y) + 1;
+                } else {
+                    p += 2*x + 1;
+                }
+                self.put_pixel((cx+x) as u32, (cy+y) as u32, color);
+                self.put_pixel((cx-x) as u32, (cy+y) as u32, color);
+                self.put_pixel((cx+x) as u32, (cy-y) as u32, color);
+                self.put_pixel((cx-x) as u32, (cy-y) as u32, color);
+                self.put_pixel((cx+y) as u32, (cy+x) as u32, color);
+                self.put_pixel((cx+y) as u32, (cy-x) as u32, color);
+                self.put_pixel((cx-y) as u32, (cy+x) as u32, color);
+                self.put_pixel((cx-y) as u32, (cy-x) as u32, color);
+
+                x += 1;
+            }
+        if is_filled == true{
+
+                self.fill(cx as u32, cy as u32, color);
+        }
     }
 }
