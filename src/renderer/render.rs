@@ -99,11 +99,20 @@ impl Render{
     x_ref_vertex1:i32, y_ref_vertex1:i32,
     x_ref_vertex2:i32, y_ref_vertex2:i32, 
     x_ref_vertex3:i32, y_ref_vertex3:i32, is_filled:bool, thickness: i32, color:Color){
+        
+        let r = thickness*2 / 2;
+
+        self.draw_circle(x_ref_vertex1, y_ref_vertex1+3, r, true, 0, color);
+        self.draw_circle(x_ref_vertex2+1, y_ref_vertex2, r, true, 0, color);
+        self.draw_circle(x_ref_vertex3-1, y_ref_vertex3, r, true, 0, color);
+
+        
         //implementar um fix para desenhar nas bordas usando um circulo cheio
         self.draw_line(x_ref_vertex1, y_ref_vertex1, x_ref_vertex2, y_ref_vertex2, thickness, color);
         self.draw_line(x_ref_vertex1, y_ref_vertex1, x_ref_vertex3, y_ref_vertex3, thickness, color);
         self.draw_line(x_ref_vertex2, y_ref_vertex2, x_ref_vertex3, y_ref_vertex3, thickness, color);
 
+        
         if is_filled == true{
             let center_x = (x_ref_vertex1 + x_ref_vertex2 + x_ref_vertex3) / 3;
             let center_y = (y_ref_vertex1 + y_ref_vertex2 + y_ref_vertex3) / 3;
@@ -160,7 +169,8 @@ impl Render{
                 x += 1;
             }
         if is_filled == true{
-            self.fill(cx as u32, cy as u32, color);
+
+                self.fill(cx as u32, cy as u32, color);
         }
     }
 }

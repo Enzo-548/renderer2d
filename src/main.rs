@@ -99,9 +99,9 @@ fn main() {
             let mid_width_canvas = (render.framebuffer.width/2) as i32;
             let mid_height_canvas = (render.framebuffer.height/2) as i32;
             render.draw_triangle(
-                mid_width_canvas, mid_height_canvas-25,
-                mid_width_canvas-25, mid_height_canvas+25,
-                mid_width_canvas+25, mid_height_canvas+25, false, 3, draw_color);
+                mid_width_canvas, mid_height_canvas-50,
+                mid_width_canvas-50, mid_height_canvas+50,
+                mid_width_canvas+50, mid_height_canvas+50, false, 20, draw_color);
                 count_but+=1;
         }
         
