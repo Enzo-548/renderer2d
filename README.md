@@ -11,7 +11,7 @@ It implements a custom framebuffer, basic drawing operations, keyboard-driven in
 
 * Custom **RGBA framebuffer** stored in CPU memory
 * Minimal `Render` layer responsible for drawing operations
-* Basic drawing primitive: **screen fill**
+* Basic drawing primitives: **screen fill, bucket fill, lines in eight directions, triangle, circle, rectangle**
 * Keyboard input mapped to rendering state (color changes)
 * `minifb` backend for window creation and presenting pixels
 * Clean separation between:
@@ -61,6 +61,14 @@ The numeric keypad controls the screen color:
 | NumPad 2 | Blue screen  |
 | NumPad 3 | Green screen |
 | NumPad 4 | Red screen   |
+| S        | Draw a square|
+| T        | Draw a triangle|
+| C        | Draw a Circle |
+| F        | Bucket-Fill in the center of the screen|
+| Arrow Up | Draw an Vertical Line from the middle top |
+| Arrow Left | Draw an Horizontal Line middle-left |
+| Arrow Down | Draw an Diagonal line from the right-top |
+| Arrow Right | Draw an Diagonal Line from the left-top |
 | ESC      | Exit program |
 
 ---
@@ -81,6 +89,7 @@ and explicit data flow over feature completeness or performance optimizations.
 * Rendering logic is **backend-agnostic**.
 * `minifb` is used only for prototyping and visualization.
 * All drawing happens on the CPU via the framebuffer.
+* The project will implement certain algorithms as the nescessity is needed.
 * The architecture is intentionally simple to make the data flow explicit:
 
 ```
@@ -91,9 +100,8 @@ Input → Render → Framebuffer → Window
 
 ## 🚧 Current Limitations
 
-* Only one drawing primitive (`clear`)
-* No geometric primitives yet (lines, rectangles, etc.)
 * No coordinate transforms
+* No custom user primitives or draws guided by the user
 * CPU-only rendering, as it is used intentionally to keep the pipeline explicit
 * Trade-offs favor simplicity and readability over raw performance
 
@@ -104,7 +112,6 @@ These limitations are intentional at this stage.
 
 ## 🛣️ Possible Next Steps
 
-* Implement drawing primitives (line, rectangle)
 * Add simple coordinate transforms (translation, scaling)
 * Mouse input handling
 * Explore a GPU-based backend using `winit` + `wgpu`
