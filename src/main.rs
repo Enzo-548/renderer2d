@@ -101,7 +101,7 @@ fn main() {
             render.draw_triangle(
                 mid_width_canvas, mid_height_canvas-50,
                 mid_width_canvas-50, mid_height_canvas+50,
-                mid_width_canvas+50, mid_height_canvas+50, false, 20, draw_color);
+                mid_width_canvas+50, mid_height_canvas+50, false, 3, draw_color);
                 count_but+=1;
         }
         
