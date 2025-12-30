@@ -130,3 +130,9 @@ This project was built as a **learning exercise** for:
 ## 📜 License
 
 This project is provided for educational purposes. Use it freely to learn and experiment.
+
+## SCREENSHOTS
+ ![Lines Demo](assets/screenshots/colored-lines-with-all-colors.png)
+ ![Triangle Demo](assets/screenshots/empty-triangle.png)
+ ![Circle Demo](assets/screenshots/green-circle-with-blue-outline.png)
+ ![Square Demo](assets/screenshots/red-square-with-black-outline.png)
