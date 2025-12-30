@@ -78,28 +78,20 @@ fn main() {
         if window.is_key_pressed(Key::S, KeyRepeat::No){
             let mid_width_canvas = (render.framebuffer.width/2) as i32;
             let mid_height_canvas = (render.framebuffer.height/2) as i32;
-            render.draw_rectangle_unfilled(
+            render.draw_rectangle(
                 mid_width_canvas, 
                 mid_height_canvas, 
                 55, 
-                55, 
-                0, 
+                55,
+                false,
+                3, 
                 draw_color);
                 count_but+=1;
-                /*if window.is_key_pressed(Key::S, KeyRepeat::No){
-                render.draw_rectangle_unfilled(
-                mid_width_canvas, 
-                mid_height_canvas, 
-                55, 
-                55, 
-                25, 
-                draw_color);
-                count_but+=1; }*/
         }
         if window.is_key_pressed(Key::C, KeyRepeat::No){
             let mid_width_canvas = (render.framebuffer.width/2) as i32;
             let mid_height_canvas = (render.framebuffer.height/2) as i32;
-            render.draw_circle(mid_width_canvas, mid_height_canvas, 500, draw_color);
+            render.draw_circle(mid_width_canvas, mid_height_canvas, 50, false, 3, draw_color);
             count_but += 1;
         }
 
@@ -109,7 +101,7 @@ fn main() {
             render.draw_triangle(
                 mid_width_canvas, mid_height_canvas-25,
                 mid_width_canvas-25, mid_height_canvas+25,
-                mid_width_canvas+25, mid_height_canvas+25, 10, draw_color);
+                mid_width_canvas+25, mid_height_canvas+25, false, 3, draw_color);
                 count_but+=1;
         }
         
