@@ -147,29 +147,21 @@ impl Render{
     }
 
     pub fn draw_circle(&mut self, cx:i32, cy:i32, r: i32, is_filled:bool, thickness: i32, color: Color){
-        let mut x = 0;
-        let mut y = -r;
-        let mut p = -r;
-            while x < -y {  
-                if p > 0{
-                    y += 1;
-                    p += 2*(x+y) + 1;
-                } else {
-                    p += 2*x + 1;
+        let r_outer = r + thickness;
+        let r_inner = (r - thickness).max(0);
+
+        for y in (cy - r_outer)..=(cy + r_outer) {
+            for x in (cx - r_outer)..=(cx + r_outer) {
+                let dx = x - cx;
+                let dy = y - cy;
+                let d2 = dx*dx + dy*dy;
+
+                if d2 <= r_outer*r_outer && d2 >= r_inner*r_inner {
+                    self.put_pixel(x as u32, y as u32, color);
                 }
-                self.put_pixel((cx+x) as u32, (cy+y) as u32, color);
-                self.put_pixel((cx-x) as u32, (cy+y) as u32, color);
-                self.put_pixel((cx+x) as u32, (cy-y) as u32, color);
-                self.put_pixel((cx-x) as u32, (cy-y) as u32, color);
-                self.put_pixel((cx+y) as u32, (cy+x) as u32, color);
-                self.put_pixel((cx+y) as u32, (cy-x) as u32, color);
-                self.put_pixel((cx-y) as u32, (cy+x) as u32, color);
-                self.put_pixel((cx-y) as u32, (cy-x) as u32, color);
-
-                x += 1;
             }
+        }
         if is_filled == true{
-
                 self.fill(cx as u32, cy as u32, color);
         }
     }
