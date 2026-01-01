@@ -4,7 +4,7 @@ This project is a **minimal 2D software renderer written in Rust**, built for le
 
 It implements a custom framebuffer, basic drawing operations, keyboard-driven interaction, and uses **minifb** as a lightweight window backend.
 
-
+🚧 Work in progress — issues and feedback welcome
 ---
 
 ## ✨ Features
