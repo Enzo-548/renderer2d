@@ -61,6 +61,8 @@ The numeric keypad controls the screen color:
 | NumPad 2 | Blue screen  |
 | NumPad 3 | Green screen |
 | NumPad 4 | Red screen   |
+| NumPad Plus | Increases the thickness   |
+| NumPad Minus | Decreases the thickness   |
 | S        | Draw a square|
 | T        | Draw a triangle|
 | C        | Draw a Circle |
@@ -69,6 +71,9 @@ The numeric keypad controls the screen color:
 | Arrow Left | Draw an Horizontal Line middle-left |
 | Arrow Down | Draw an Diagonal line from the right-top |
 | Arrow Right | Draw an Diagonal Line from the left-top |
+| Mouse Left |  Acts like an square brush in the canvas,
+              drag the mouse in the window to draw multiple
+              squares |
 | ESC      | Exit program |
 
 ---

@@ -4,7 +4,7 @@ use crate::renderer::{color::Color, framebuffer::{*}};
 pub struct Render{
     pub framebuffer : Framebuffer,
     pub background_color : Color,
-    //window??
+    //overlay??
 }
 
 impl Render{
@@ -28,6 +28,16 @@ impl Render{
 
         let index = (y*self.framebuffer.width + x) as usize;
         self.framebuffer.pixels_buffer[index] = color;
+    }
+
+        pub fn draw_pixel_dynam(&mut self, fix_x:u32, fix_y:u32, thickness: i32, color: Color){
+        /*for i in -thickness..thickness{
+            let x = x as i32 + i;
+            let y = y as i32 + i;
+            self.put_pixel(x as u32, y as u32, color);
+        }*/
+
+        self.draw_rectangle(fix_x as i32, fix_y as i32, 1, 1, true, thickness, color);
     }
 
     pub fn return_pixel(&mut self, x:u32, y:u32) -> Option<&mut Color>{
@@ -165,4 +175,6 @@ impl Render{
                 self.fill(cx as u32, cy as u32, color);
         }
     }
+    //pub fn transforms
+    //overlay
 }
