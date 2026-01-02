@@ -2,7 +2,7 @@ mod renderer;
 
 use minifb::{Key, KeyRepeat, Window, WindowOptions};
 
-use crate::renderer::{color::{self, Color}, framebuffer::Framebuffer, render::Render};
+use crate::renderer::{color::{self, Color}, framebuffer::{self, Framebuffer}, render::Render};
 fn main() {
     println!("Hello, world!");
     let buffer = Framebuffer::new(600, 600);
@@ -29,11 +29,9 @@ fn main() {
         /*for i in render.buffer().iter_mut() {
             *i = 0; // write something more funny here!
         }*/
-        
-    if cur_thickness < 0{
-        cur_thickness = 0;
-    }
-
+        if cur_thickness < 0  || cur_thickness > render.framebuffer.width as i32{
+            cur_thickness = 1;
+        }
         if window.is_key_pressed(Key::NumPadPlus, KeyRepeat::Yes) || window.is_key_pressed(Key::NumPadMinus, KeyRepeat::Yes)
         {
                 if window.is_key_pressed(Key::NumPadPlus, KeyRepeat::Yes){
@@ -137,10 +135,10 @@ fn main() {
 
         if is_mouse_valid && window.get_mouse_down(minifb::MouseButton::Left){
             let mut pos_vec = Vec::new();
-            last_mouse_pos = window.get_mouse_pos(minifb::MouseMode::Discard);
+            let last_mouse_pos = window.get_mouse_pos(minifb::MouseMode::Discard).unwrap();
             pos_vec.push(last_mouse_pos);
 
-            while let Some(last) =  pos_vec.pop(){
+            while let Some((x,y)) =  pos_vec.pop(){
                 render.draw_pixel_dynam(x as u32, y as u32, cur_thickness, draw_color);
             }
         }

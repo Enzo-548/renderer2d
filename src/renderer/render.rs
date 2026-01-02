@@ -110,14 +110,13 @@ impl Render{
     x_ref_vertex2:i32, y_ref_vertex2:i32, 
     x_ref_vertex3:i32, y_ref_vertex3:i32, is_filled:bool, thickness: i32, color:Color){
         
-        let r = thickness*2 / 2;
+        let r = thickness;
 
-        self.draw_circle(x_ref_vertex1, y_ref_vertex1+3, r, true, 0, color);
-        self.draw_circle(x_ref_vertex2+1, y_ref_vertex2, r, true, 0, color);
-        self.draw_circle(x_ref_vertex3-1, y_ref_vertex3, r, true, 0, color);
+        self.draw_circle(x_ref_vertex1, y_ref_vertex1, r, true, 0, color);
+        self.draw_circle(x_ref_vertex2, y_ref_vertex2, r, true, 0, color);
+        self.draw_circle(x_ref_vertex3, y_ref_vertex3, r, true, 0, color);
 
         
-        //implementar um fix para desenhar nas bordas usando um circulo cheio
         self.draw_line(x_ref_vertex1, y_ref_vertex1, x_ref_vertex2, y_ref_vertex2, thickness, color);
         self.draw_line(x_ref_vertex1, y_ref_vertex1, x_ref_vertex3, y_ref_vertex3, thickness, color);
         self.draw_line(x_ref_vertex2, y_ref_vertex2, x_ref_vertex3, y_ref_vertex3, thickness, color);
@@ -156,25 +155,53 @@ impl Render{
         }
     }
 
-    pub fn draw_circle(&mut self, cx:i32, cy:i32, r: i32, is_filled:bool, thickness: i32, color: Color){
-        let r_outer = r + thickness;
-        let r_inner = (r - thickness).max(0);
-
-        for y in (cy - r_outer)..=(cy + r_outer) {
-            for x in (cx - r_outer)..=(cx + r_outer) {
+    pub fn draw_circle(
+    &mut self,
+    cx: i32,
+    cy: i32,
+    r: i32,
+    is_filled: bool,
+    thickness: i32,
+    color: Color,
+) {
+    // caso especial: círculo sólido
+    if thickness <= 0 {
+        let r2 = r * r;
+        for y in (cy - r)..=(cy + r) {
+            for x in (cx - r)..=(cx + r) {
                 let dx = x - cx;
                 let dy = y - cy;
-                let d2 = dx*dx + dy*dy;
-
-                if d2 <= r_outer*r_outer && d2 >= r_inner*r_inner {
+                if dx*dx + dy*dy <= r2 {
                     self.put_pixel(x as u32, y as u32, color);
                 }
             }
         }
-        if is_filled == true{
-                self.fill(cx as u32, cy as u32, color);
+        return;
+    }
+
+    // anel (outline)
+    let r_outer = r + thickness;
+    let r_inner = (r - thickness).max(0);
+
+    let ro2 = r_outer * r_outer;
+    let ri2 = r_inner * r_inner;
+
+    for y in (cy - r_outer)..=(cy + r_outer) {
+        for x in (cx - r_outer)..=(cx + r_outer) {
+            let dx = x - cx;
+            let dy = y - cy;
+            let d2 = dx*dx + dy*dy;
+
+            if d2 <= ro2 && d2 >= ri2 {
+                self.put_pixel(x as u32, y as u32, color);
+            }
         }
     }
+
+    if is_filled {
+        self.fill(cx as u32, cy as u32, color);
+    }
+}
     //pub fn transforms
     //overlay
 }
