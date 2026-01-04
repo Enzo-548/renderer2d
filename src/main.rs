@@ -96,7 +96,7 @@ fn main() {
                 55, 
                 55,
                 false,
-                3, 
+                cur_thickness, 
                 draw_color);
                 count_but+=1;
         }
