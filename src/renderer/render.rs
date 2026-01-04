@@ -166,16 +166,32 @@ impl Render{
 ) {
     // caso especial: círculo sólido
     if thickness <= 0 {
-        let r2 = r * r;
-        for y in (cy - r)..=(cy + r) {
-            for x in (cx - r)..=(cx + r) {
-                let dx = x - cx;
-                let dy = y - cy;
-                if dx*dx + dy*dy <= r2 {
-                    self.put_pixel(x as u32, y as u32, color);
-                }
+        let mut x = r;
+        let mut y = 0;
+        let mut d = 1 - r;
+
+        while x >= y {
+            self.put_pixel((cx + x) as u32, (cy + y) as u32, color);
+            self.put_pixel((cx + y) as u32, (cy + x) as u32, color);
+
+            self.put_pixel((cx - x) as u32, (cy + y) as u32, color);
+            self.put_pixel((cx - y) as u32, (cy + x) as u32, color);
+
+            self.put_pixel((cx - x) as u32, (cy - y) as u32, color);
+            self.put_pixel((cx - y) as u32, (cy - x) as u32, color);
+
+            self.put_pixel((cx + x) as u32, (cy - y) as u32, color);
+            self.put_pixel((cx + y) as u32, (cy - x) as u32, color);
+            y += 1;
+
+            if d < 0 {
+                d += 2*y + 1;
+            } else {
+                x -= 1;
+                d += 2*(y - x) + 1;
             }
         }
+
         return;
     }
 
