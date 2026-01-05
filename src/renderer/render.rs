@@ -4,13 +4,21 @@ use crate::renderer::{color::Color, framebuffer::{*}};
 pub struct Render{
     pub framebuffer : Framebuffer,
     pub background_color : Color,
-    //overlay??
+    /* Layer Vector: carrega varias listas de cores, vai ser usado para implementação de layers;
+     * eh uma mudanca arquitetural importante pois aqui vai ser onde o overlay vai ser implementado, 
+     * podendo ser usado também para carregar multiplos framebuffers ou camadas especificas de desenho
+     * */ 
+    
+    //pub layer : Vec<Vec<Color>>,
 }
 
 impl Render{
     /// Cria o renderer com um framebuffer inicial
     pub fn new(framebuffer: Framebuffer, background_color:Color) -> Render{
-        return Self { framebuffer, background_color};
+        return Self { 
+            framebuffer, 
+            background_color, 
+        /*layer:Vec::new(),*/};
     }
     /// Limpa o framebuffer com uma cor
     pub fn clear(&mut self, color: Color){
@@ -30,7 +38,7 @@ impl Render{
         self.framebuffer.pixels_buffer[index] = color;
     }
 
-        pub fn draw_pixel_dynam(&mut self, fix_x:u32, fix_y:u32, thickness: i32, color: Color){
+        pub fn draw_dynam(&mut self, fix_x:u32, fix_y:u32, thickness: i32, color: Color){
         /*for i in -thickness..thickness{
             let x = x as i32 + i;
             let y = y as i32 + i;

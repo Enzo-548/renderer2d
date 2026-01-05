@@ -139,7 +139,7 @@ fn main() {
             pos_vec.push(last_mouse_pos);
 
             while let Some((x,y)) =  pos_vec.pop(){
-                render.draw_pixel_dynam(x as u32, y as u32, cur_thickness, draw_color);
+                render.draw_dynam(x as u32, y as u32, cur_thickness, draw_color);
             }
         }
         // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
