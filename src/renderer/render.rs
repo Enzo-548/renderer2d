@@ -52,7 +52,7 @@ impl Render{
                 let x_ref_vertex3 = (fix_x+25) as i32; let y_ref_vertex3 = (fix_y+25) as i32;
                 self.draw_triangle(x_ref_vertex1, y_ref_vertex1, x_ref_vertex2, y_ref_vertex2, x_ref_vertex3, y_ref_vertex3, true, thickness, color)
             },
-            2 => self.draw_circle(fix_x as i32, fix_y as i32, 20, true, thickness, color),
+            2 => self.draw_circle(fix_x as i32, fix_y as i32, thickness, true, thickness, color),
             _ => println!("não aceito")
         }
         self.draw_rectangle(fix_x as i32, fix_y as i32, 1, 1, true, thickness, color);
