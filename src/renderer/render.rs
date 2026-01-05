@@ -38,13 +38,23 @@ impl Render{
         self.framebuffer.pixels_buffer[index] = color;
     }
 
-        pub fn draw_dynam(&mut self, fix_x:u32, fix_y:u32, thickness: i32, color: Color){
+        pub fn draw_dynam(&mut self, draw_sel:u32, fix_x:u32, fix_y:u32, thickness: i32, color: Color){
         /*for i in -thickness..thickness{
             let x = x as i32 + i;
             let y = y as i32 + i;
             self.put_pixel(x as u32, y as u32, color);
         }*/
-
+        match draw_sel{
+            0 => self.draw_rectangle(fix_x as i32, fix_y as i32, 1, 1, true, thickness, color),
+            1 => {
+                let x_ref_vertex1 = fix_x as i32; let y_ref_vertex1 = (fix_y-25) as i32;
+                let x_ref_vertex2 = (fix_x-25) as i32; let y_ref_vertex2 = (fix_y+25) as i32;
+                let x_ref_vertex3 = (fix_x+25) as i32; let y_ref_vertex3 = (fix_y+25) as i32;
+                self.draw_triangle(x_ref_vertex1, y_ref_vertex1, x_ref_vertex2, y_ref_vertex2, x_ref_vertex3, y_ref_vertex3, true, thickness, color)
+            },
+            2 => self.draw_circle(fix_x as i32, fix_y as i32, 20, true, thickness, color),
+            _ => println!("não aceito")
+        }
         self.draw_rectangle(fix_x as i32, fix_y as i32, 1, 1, true, thickness, color);
     }
 
@@ -226,6 +236,10 @@ impl Render{
         self.fill(cx as u32, cy as u32, color);
     }
 }
-    //pub fn transforms
-    //overlay
+    //pub fn move(original(x, y), new(z,a)){}
+    //pub fn size(old_size, new_size){}
+    //pub fn rotate(angle)
+    
+    /* later */
+    //pub fn skew()
 }

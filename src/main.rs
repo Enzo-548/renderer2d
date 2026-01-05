@@ -24,14 +24,12 @@ fn main() {
     let mut draw_color_sel = 0;
     let mut draw_color =    color_array[draw_color_sel];
     let mut cur_thickness = 1;
+    let mut brush_sel = 0;
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
         /*for i in render.buffer().iter_mut() {
             *i = 0; // write something more funny here!
         }*/
-        if cur_thickness < 0  || cur_thickness > render.framebuffer.width as i32{
-            cur_thickness = 1;
-        }
         if window.is_key_pressed(Key::NumPadPlus, KeyRepeat::Yes) || window.is_key_pressed(Key::NumPadMinus, KeyRepeat::Yes)
         {
                 if window.is_key_pressed(Key::NumPadPlus, KeyRepeat::Yes){
@@ -40,6 +38,10 @@ fn main() {
                 if window.is_key_pressed(Key::NumPadMinus, KeyRepeat::Yes){
                     cur_thickness -= 1;
                 }
+            
+            if cur_thickness < 0  || cur_thickness > render.framebuffer.width as i32{
+            cur_thickness = 0;
+        }
         }
         if window.is_key_pressed(Key::NumPad0, KeyRepeat::No){
             render.clear(Color::WHITE);
@@ -85,6 +87,13 @@ fn main() {
                     draw_color_sel = 0;
                 }
             draw_color = color_array[draw_color_sel];
+            count_but+=1;
+        }
+        if window.is_key_pressed(Key::LeftShift, KeyRepeat::No){
+                brush_sel += 1;
+                if brush_sel < 0 || brush_sel > 2{
+                    brush_sel = 0;
+                }
             count_but+=1;
         }
         if window.is_key_pressed(Key::S, KeyRepeat::No){
@@ -139,7 +148,7 @@ fn main() {
             pos_vec.push(last_mouse_pos);
 
             while let Some((x,y)) =  pos_vec.pop(){
-                render.draw_dynam(x as u32, y as u32, cur_thickness, draw_color);
+                render.draw_dynam(brush_sel, x as u32, y as u32, cur_thickness, draw_color);
             }
         }
         // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
