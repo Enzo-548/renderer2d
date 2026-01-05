@@ -1,8 +1,9 @@
 mod renderer;
 
 use minifb::{Key, KeyRepeat, Window, WindowOptions};
-
+use image::{ImageBuffer, Rgba};
 use crate::renderer::{color::{self, Color}, framebuffer::{self, Framebuffer}, render::Render};
+
 fn main() {
     println!("Hello, world!");
     let buffer = Framebuffer::new(600, 600);
@@ -25,11 +26,25 @@ fn main() {
     let mut draw_color =    color_array[draw_color_sel];
     let mut cur_thickness = 1;
     let mut brush_sel = 0;
+    let mut out_count = 0;
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
         /*for i in render.buffer().iter_mut() {
             *i = 0; // write something more funny here!
         }*/
+        if window.is_key_pressed(Key::NumPadEnter, KeyRepeat::Yes){
+            let raw = render.framebuffer.as_u8_buffer();
+
+            let name = format!("output{}", out_count);
+
+            let img: ImageBuffer<Rgba<u8>, Vec<u8>> =
+            ImageBuffer::from_raw(render.framebuffer.width, render.framebuffer.height, raw)
+            .expect("Invalid framebuffer size");
+            img.save(format!("assets/output/{name}.png")).expect("failed to save image");
+            count_but += 1;
+            out_count+=1;
+        }
+        
         if window.is_key_pressed(Key::NumPadPlus, KeyRepeat::Yes) || window.is_key_pressed(Key::NumPadMinus, KeyRepeat::Yes)
         {
                 if window.is_key_pressed(Key::NumPadPlus, KeyRepeat::Yes){

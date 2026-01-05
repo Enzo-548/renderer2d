@@ -28,4 +28,10 @@ impl Framebuffer{
             })
             .collect()
     }
+    pub fn as_u8_buffer(&self) -> Vec<u8>{
+        self.pixels_buffer
+        .iter()
+        .flat_map(|c| [c.r, c.g, c.b, c.a])
+        .collect()
+    }
 }

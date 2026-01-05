@@ -9,7 +9,7 @@ pub struct Render{
      * podendo ser usado também para carregar multiplos framebuffers ou camadas especificas de desenho
      * */ 
     
-    //pub layer : Vec<Vec<Color>>,
+    //pub layers : Vec<Framebuffer>,
 }
 
 impl Render{
@@ -18,7 +18,7 @@ impl Render{
         return Self { 
             framebuffer, 
             background_color, 
-        /*layer:Vec::new(),*/};
+        /*  layers: Vec<Framebuffer>::new(),*/};
     }
     /// Limpa o framebuffer com uma cor
     pub fn clear(&mut self, color: Color){
