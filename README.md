@@ -9,18 +9,17 @@ It implements a custom framebuffer, basic drawing operations, keyboard-driven in
 
 ## ✨ Features
 
-* Custom **RGBA framebuffer** stored in CPU memory
-* Minimal `Render` layer responsible for drawing operations
-* Basic drawing primitives: **screen fill, bucket fill, lines in eight directions, triangle, circle, rectangle**
-* Keyboard input mapped to rendering state (color changes\brush changes)
-* Preview/overlay of the brush on the canvas
-* Saving state of the buffer/drawing of the canvas
-* `minifb` backend for window creation and presenting pixels
-* Clean separation between:
-
-  * rendering logic
-  * framebuffer data
-  * window/input handling
+- Custom **RGBA framebuffer** stored in CPU memory  
+- Minimal `Render` layer responsible for drawing operations  
+- Basic drawing primitives: **screen clear, bucket fill, lines in eight directions, triangle, circle, rectangle**  
+- Keyboard input mapped to rendering state (color changes / brush changes)  
+- Brush **preview / overlay** on the canvas  
+- Saving the current state of the framebuffer to an image  
+- `minifb` backend for window creation and pixel presentation  
+- Clean separation between:
+  - rendering logic  
+  - framebuffer data  
+  - window and input handling  
 
 ---
 
@@ -54,28 +53,28 @@ src/
 
 ## 🎮 Controls
 
-The numeric keypad controls the screen color:
+The numeric keypad controls screen color and drawing parameters:
 
-| Key      | Action       |
-| -------- | ------------ |
-| NumPad 0 | White screen |
-| NumPad 1 | Black screen |
-| NumPad 2 | Blue screen  |
-| NumPad 3 | Green screen |
-| NumPad 4 | Red screen   |
-| NumPad Plus | Increases the thickness   |
-| NumPad Minus | Decreases the thickness   |
-| S        | Draw a square|
-| T        | Draw a triangle|
-| C        | Draw a Circle |
-| F        | Bucket-Fill in the center of the screen|
-| Arrow Up | Draw an Vertical Line from the middle top |
-| Arrow Left | Draw an Horizontal Line middle-left |
-| Arrow Down | Draw an Diagonal line from the right-top |
-| Arrow Right | Draw an Diagonal Line from the left-top |
-| Mouse Left |  Acts like an square brush in the canvas, drag the mouse in the window to draw multiple squares |
-| NumPad Enter | Saves the buffer/drawing on the "assets/output" path   |
-| ESC      | Exit program |
+| Key            | Action |
+|---------------|--------|
+| NumPad 0      | White screen |
+| NumPad 1      | Black screen |
+| NumPad 2      | Blue screen |
+| NumPad 3      | Green screen |
+| NumPad 4      | Red screen |
+| NumPad Plus   | Increase thickness |
+| NumPad Minus  | Decrease thickness |
+| S             | Draw a square |
+| T             | Draw a triangle |
+| C             | Draw a circle |
+| F             | Bucket fill at the center of the screen |
+| Arrow Up      | Draw a vertical line from the top-middle |
+| Arrow Left    | Draw a horizontal line from the middle-left |
+| Arrow Down    | Draw a diagonal line from the top-right |
+| Arrow Right   | Draw a diagonal line from the top-left |
+| Mouse Left    | Acts as a square brush; drag to draw on the canvas |
+| NumPad Enter  | Save the current buffer to `assets/output` |
+| ESC           | Exit the program |
 
 ---
 
@@ -96,7 +95,7 @@ and explicit data flow over feature completeness or performance optimizations.
 * `minifb` is used only for prototyping and visualization.
 * All drawing happens on the CPU via the framebuffer.
 * The project will implement certain algorithms as the nescessity is needed.
-* The architecture is intentionally simple to make the data flow explicit:
+* The architecture is intentionally simple to make the data flow explicit.
 * Thickness is implemented as a rasterization-time pixel offset applied to shape outlines, not as a geometric transform. It is a visual-only parameter and may cause distortions in some shapes at higher values.
 
 ```
@@ -130,6 +129,7 @@ This project was built as a **learning exercise** for:
 * applying Rust ownership, borrowing, and lifetimes in a renderer-style codebase
 * understanding low-level rendering concepts
 * practicing modular design and architectural trade-offs
+
 
 ---
 
