@@ -6,8 +6,8 @@ use crate::renderer::{color::{self, Color}, framebuffer::{self, Framebuffer}, re
 
 fn main() {
     println!("Hello, world!");
-    let buffer = Framebuffer::new(600, 600);
-    let mut render: Render = Render::new(buffer, Color::ZERO);
+    let main_buffer = Framebuffer::new(600, 600);
+    let mut render: Render = Render::new(main_buffer, Color::ZERO);
     let mut window = Window::new(
         "Test - ESC to exit",
         render.framebuffer.width as usize,
@@ -27,11 +27,30 @@ fn main() {
     let mut cur_thickness = 1;
     let mut brush_sel = 0;
     let mut out_count = 0;
+    let mut display = Framebuffer::new(render.framebuffer.width, render.framebuffer.height);
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
         /*for i in render.buffer().iter_mut() {
             *i = 0; // write something more funny here!
         }*/
+        display.pixels_buffer = render.framebuffer.pixels_buffer.clone();
+        
+        
+        if let Some(overlay) = render.overlay_mut() {
+            let mut count = 0;
+            for i in overlay.framebuffer.pixels_buffer.as_slice(){
+                if i.a > 0 {
+                    display.pixels_buffer.as_mut_slice()[count] = *i;
+                }
+                count+=1;
+            }
+            overlay.clear(Color::ZERO);
+            
+        }
+        
+        
+
+        
         if window.is_key_pressed(Key::NumPadEnter, KeyRepeat::Yes){
             let raw = render.framebuffer.as_u8_buffer();
 
@@ -157,18 +176,43 @@ fn main() {
 
             let mut last_mouse_pos: Option<(f32, f32)> = None;
 
-        if is_mouse_valid && window.get_mouse_down(minifb::MouseButton::Left){
+        if is_mouse_valid || window.get_mouse_down(minifb::MouseButton::Left){
             let mut pos_vec = Vec::new();
-            let last_mouse_pos = window.get_mouse_pos(minifb::MouseMode::Discard).unwrap();
-            pos_vec.push(last_mouse_pos);
+            if window.get_mouse_down(minifb::MouseButton::Left){
+                match window.get_mouse_pos(minifb::MouseMode::Discard) { 
 
-            while let Some((x,y)) =  pos_vec.pop(){
-                render.draw_dynam(brush_sel, x as u32, y as u32, cur_thickness, draw_color);
+                    Some(last_mouse_pos) => {
+                        pos_vec.push(last_mouse_pos);
+
+                        while let Some((x,y)) =  pos_vec.pop(){
+                            render.draw_dynam(brush_sel, x as u32, y as u32, cur_thickness, draw_color);
+                        }
+
+                    }
+                    None => {
+                        println!("Coordenada inválida!");
+                    }
+                }
             }
+            match window.get_mouse_pos(minifb::MouseMode::Discard) { 
+                
+                    Some(last_mouse_pos) => {
+                        pos_vec.push(last_mouse_pos);
+                        if let Some(overlay) = render.overlay_mut(){
+                        while let Some((x,y)) =  pos_vec.pop(){
+                            overlay.draw_dynam(brush_sel, x as u32, y as u32, cur_thickness, draw_color);
+                        }
+                    }
+
+                    }
+                    None => {
+                        println!("Coordenada inválida!");
+                    }
+                }            
         }
         // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
         window
-            .update_with_buffer(&render.framebuffer.as_u32_buffer(), render.framebuffer.width as usize, render.framebuffer.height as usize)
+            .update_with_buffer(&display.as_u32_buffer(), display.width as usize, display.height as usize)
             .unwrap();
     }
     println!("A quantidade de vezes que os botoes foram apertados foi: {}", count_but);

@@ -9,16 +9,34 @@ pub struct Render{
      * podendo ser usado também para carregar multiplos framebuffers ou camadas especificas de desenho
      * */ 
     
-    //pub layers : Vec<Framebuffer>,
+    pub layers : Vec<Render>,
 }
 
 impl Render{
     /// Cria o renderer com um framebuffer inicial
-    pub fn new(framebuffer: Framebuffer, background_color:Color) -> Render{
-        return Self { 
-            framebuffer, 
-            background_color, 
-        /*  layers: Vec<Framebuffer>::new(),*/};
+    pub fn new(framebuffer: Framebuffer, background_color: Color) -> Render {
+        let overlay = Render::new_layer(
+            Framebuffer::new(framebuffer.width, framebuffer.height),
+            Color::ZERO,
+        );
+
+        Self {
+            framebuffer,
+            background_color,
+            layers: vec![overlay],
+        }
+    }
+    /// Cria um novo layer para o renderer inicial
+    pub fn new_layer(framebuffer: Framebuffer, background_color: Color) -> Render {
+        Self {
+            framebuffer,
+            background_color,
+            layers: Vec::new(),
+        }
+    }
+
+    pub fn overlay_mut(&mut self) -> Option<&mut Render>{
+        self.layers.get_mut(0)
     }
     /// Limpa o framebuffer com uma cor
     pub fn clear(&mut self, color: Color){
@@ -38,6 +56,17 @@ impl Render{
         self.framebuffer.pixels_buffer[index] = color;
     }
 
+    pub fn return_pixel(&mut self, x:u32, y:u32) -> Option<&mut Color>{
+            if x>= self.framebuffer.width || y>= self.framebuffer.height {
+            return None;
+        } else {
+            let index = (y*self.framebuffer.width + x) as usize;
+            let col_ref = &mut self.framebuffer.pixels_buffer[index];
+            return Some(col_ref);
+        }
+    }
+
+
         pub fn draw_dynam(&mut self, draw_sel:u32, fix_x:u32, fix_y:u32, thickness: i32, color: Color){
         /*for i in -thickness..thickness{
             let x = x as i32 + i;
@@ -56,16 +85,6 @@ impl Render{
             _ => println!("não aceito")
         }
         self.draw_rectangle(fix_x as i32, fix_y as i32, 1, 1, true, thickness, color);
-    }
-
-    pub fn return_pixel(&mut self, x:u32, y:u32) -> Option<&mut Color>{
-            if x>= self.framebuffer.width || y>= self.framebuffer.height {
-            return None;
-        } else {
-            let index = (y*self.framebuffer.width + x) as usize;
-            let col_ref = &mut self.framebuffer.pixels_buffer[index];
-            return Some(col_ref);
-        }
     }
 
     pub fn draw_line(&mut self, x0:i32, y0:i32, x1:i32,y1:i32, thickness:i32, color: Color){

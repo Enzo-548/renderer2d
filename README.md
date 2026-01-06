@@ -12,7 +12,9 @@ It implements a custom framebuffer, basic drawing operations, keyboard-driven in
 * Custom **RGBA framebuffer** stored in CPU memory
 * Minimal `Render` layer responsible for drawing operations
 * Basic drawing primitives: **screen fill, bucket fill, lines in eight directions, triangle, circle, rectangle**
-* Keyboard input mapped to rendering state (color changes)
+* Keyboard input mapped to rendering state (color changes\brush changes)
+* Preview/overlay of the brush on the canvas
+* Saving state of the buffer/drawing of the canvas
 * `minifb` backend for window creation and presenting pixels
 * Clean separation between:
 
@@ -37,13 +39,13 @@ src/
 ### Module Responsibilities
 
 * **`Color`**
-  Simple RGBA color type with predefined constants (RED, GREEN, BLUE, etc.).
+  Simple RGBA color type with predefined constants (RED, GREEN, BLUE, ALPHA).
 
 * **`Framebuffer`**
-  Stores pixel data and dimensions. Provides conversion to a `Vec<u32>` suitable for `minifb`.
+  Stores pixel data and dimensions. Provides conversion to a `Vec<u32>` suitable for `minifb`, and `Vec<u8>` suitable for the image library.
 
 * **`Render`**
-  Owns a framebuffer and provides drawing operations such as `clear` and `put_pixel`.
+  Owns some structs as a main framebuffer, a definition of a background color and a array of layers, also provides drawing operations such as `clear`, `put_pixel`, `return_pixel` and `draw_*`(primitive).
 
 * **`main.rs`**
   Orchestrates the application loop, handles keyboard input, and presents the framebuffer using `minifb`.
@@ -72,6 +74,7 @@ The numeric keypad controls the screen color:
 | Arrow Down | Draw an Diagonal line from the right-top |
 | Arrow Right | Draw an Diagonal Line from the left-top |
 | Mouse Left |  Acts like an square brush in the canvas, drag the mouse in the window to draw multiple squares |
+| NumPad Enter | Saves the buffer/drawing on the "assets/output" path   |
 | ESC      | Exit program |
 
 ---
@@ -94,6 +97,7 @@ and explicit data flow over feature completeness or performance optimizations.
 * All drawing happens on the CPU via the framebuffer.
 * The project will implement certain algorithms as the nescessity is needed.
 * The architecture is intentionally simple to make the data flow explicit:
+* Thickness is implemented as a rasterization-time pixel offset applied to shape outlines, not as a geometric transform. It is a visual-only parameter and may cause distortions in some shapes at higher values.
 
 ```
 Input → Render → Framebuffer → Window
@@ -116,7 +120,6 @@ These limitations are intentional at this stage.
 ## 🛣️ Possible Next Steps
 
 * Add simple coordinate transforms (translation, scaling)
-* Mouse input handling
 * Explore a GPU-based backend using `winit` + `wgpu`
 
 ---
@@ -140,3 +143,4 @@ This project is provided for educational purposes. Use it freely to learn and ex
  ![Circle Demo](assets/screenshots/green-circle-with-blue-outline.png)
  ![Square Demo](assets/screenshots/red-square-with-black-outline.png)
  ![Square Brush Demo](assets/screenshots/glad-and-stilish-girl.png)
+ ![Drawing Demo1](assets/img_artifacts/worst_enemy_of_a_red_crab.png)
