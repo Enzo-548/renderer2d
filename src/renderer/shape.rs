@@ -101,8 +101,8 @@ impl ShapeKind {
             ShapeKind::Line { a, b } => {
                 a.0 *= sx;
                 a.1 *= sy;
-                b.0 += sx;
-                b.1 += sy;
+                b.0 *= sx;
+                b.1 *= sy;
             }
             ShapeKind::Polygon { vertices } => {
                 fn centroid(vertices: &Vec<(f32,f32)>) -> (f32,f32) {
