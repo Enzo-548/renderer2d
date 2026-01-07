@@ -255,9 +255,8 @@ impl Render{
         self.fill(cx as u32, cy as u32, color);
     }
 }
-    //pub fn move(original(x, y), new(z,a)){}
-    //pub fn size(old_size, new_size){}
-    //pub fn rotate(angle)
+    //  pub fn draw_filled circle
+    
     
     /* later */
     //pub fn skew()

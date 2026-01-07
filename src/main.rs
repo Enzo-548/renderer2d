@@ -193,6 +193,7 @@ fn main() {
                         println!("Coordenada inválida!");
                     }
                 }
+                count_but+=1;
             }
             match window.get_mouse_pos(minifb::MouseMode::Discard) { 
                 
