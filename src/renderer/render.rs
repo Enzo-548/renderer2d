@@ -67,7 +67,7 @@ impl Render{
     }
 
 
-        pub fn draw_dynam(&mut self, draw_sel:u32, fix_x:u32, fix_y:u32, thickness: i32, color: Color){
+        pub fn draw_dynam(&mut self, draw_sel:u32, fix_x:u32, fix_y:u32, thickness: i32, color: Color, destination:(u32,u32)){
         /*for i in -thickness..thickness{
             let x = x as i32 + i;
             let y = y as i32 + i;
@@ -82,9 +82,10 @@ impl Render{
                 self.draw_triangle(x_ref_vertex1, y_ref_vertex1, x_ref_vertex2, y_ref_vertex2, x_ref_vertex3, y_ref_vertex3, true, thickness, color)
             },
             2 => self.draw_circle(fix_x as i32, fix_y as i32, thickness, true, thickness, color),
+            3=> self.fill(fix_x, fix_y, color),
+            4=> self.draw_line(fix_x as i32, fix_y as i32, destination.0 as i32, destination.1 as i32, thickness, color),
             _ => println!("não aceito")
         }
-        self.draw_rectangle(fix_x as i32, fix_y as i32, 1, 1, true, thickness, color);
     }
 
     pub fn draw_line(&mut self, x0:i32, y0:i32, x1:i32,y1:i32, thickness:i32, color: Color){

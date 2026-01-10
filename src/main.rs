@@ -125,7 +125,7 @@ fn main() {
         }
         if window.is_key_pressed(Key::LeftShift, KeyRepeat::No){
                 brush_sel += 1;
-                if brush_sel < 0 || brush_sel > 2{
+                if brush_sel > 4{
                     brush_sel = 0;
                 }
             count_but+=1;
@@ -185,7 +185,15 @@ fn main() {
                         pos_vec.push(last_mouse_pos);
 
                         while let Some((x,y)) =  pos_vec.pop(){
-                            render.draw_dynam(brush_sel, x as u32, y as u32, cur_thickness, draw_color);
+                            if brush_sel == 4{
+                                let fix_x = x;
+                                let fix_y = y;
+                                while !window.get_mouse_down(minifb::MouseButton::Left){
+                                
+                                render.draw_dynam(brush_sel, fix_x as u32, fix_y as u32, cur_thickness, draw_color, (x as u32,y as u32));        
+                                }
+                            }
+                            render.draw_dynam(brush_sel, x as u32, y as u32, cur_thickness, draw_color, (0,0));
                         }
 
                     }
@@ -201,7 +209,9 @@ fn main() {
                         pos_vec.push(last_mouse_pos);
                         if let Some(overlay) = render.overlay_mut(){
                         while let Some((x,y)) =  pos_vec.pop(){
-                            overlay.draw_dynam(brush_sel, x as u32, y as u32, cur_thickness, draw_color);
+                            if brush_sel != 4{
+                            overlay.draw_dynam(brush_sel, x as u32, y as u32, cur_thickness, draw_color,(0,0));
+                            }
                         }
                     }
 
