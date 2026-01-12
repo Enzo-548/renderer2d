@@ -3,70 +3,33 @@ use crate::renderer::{color::Color, framebuffer::{*}};
 #[derive (Debug)]
 pub struct Render{
     pub framebuffer : Framebuffer,
-    pub background_color : Color,
     /* Layer Vector: carrega varias listas de cores, vai ser usado para implementação de layers;
      * eh uma mudanca arquitetural importante pois aqui vai ser onde o overlay vai ser implementado, 
      * podendo ser usado também para carregar multiplos framebuffers ou camadas especificas de desenho
      * */ 
     
-    pub layers : Vec<Render>,
+    pub layers : Vec<Framebuffer>,
 }
 
 impl Render{
     /// Cria o renderer com um framebuffer inicial
-    pub fn new(framebuffer: Framebuffer, background_color: Color) -> Render {
-        let overlay = Render::new_layer(
-            Framebuffer::new(framebuffer.width, framebuffer.height),
-            Color::ZERO,
-        );
-
+    pub fn new(framebuffer: Framebuffer) -> Render {
+        let (width, height) = (framebuffer.width, framebuffer.height);
         Self {
             framebuffer,
-            background_color,
-            layers: vec![overlay],
+            layers: vec![Render::new_layer(width,height)],
         }
     }
     /// Cria um novo layer para o renderer inicial
-    pub fn new_layer(framebuffer: Framebuffer, background_color: Color) -> Render {
-        Self {
-            framebuffer,
-            background_color,
-            layers: Vec::new(),
-        }
+    pub fn new_layer(width:u32, height:u32) -> Framebuffer {
+        Framebuffer::new(width,height)
     }
 
-    pub fn overlay_mut(&mut self) -> Option<&mut Render>{
+    pub fn overlay_mut(&mut self) -> Option<&mut Framebuffer>{
         self.layers.get_mut(0)
     }
-    /// Limpa o framebuffer com uma cor
-    pub fn clear(&mut self, color: Color){
-        for pixel in &mut self.framebuffer.pixels_buffer{
-            *pixel = color;
-        }
-        self.background_color = color;
-    }
-    /// Desenha um pixel (com bounds check)
-    pub fn put_pixel(&mut self, x:u32, y:u32, color: Color){
-        //X = largura; Y=altura;
-        if x>= self.framebuffer.width || y>= self.framebuffer.height {
-            return;
-        }
-
-        let index = (y*self.framebuffer.width + x) as usize;
-        self.framebuffer.pixels_buffer[index] = color;
-    }
-
-    pub fn return_pixel(&mut self, x:u32, y:u32) -> Option<&mut Color>{
-            if x>= self.framebuffer.width || y>= self.framebuffer.height {
-            return None;
-        } else {
-            let index = (y*self.framebuffer.width + x) as usize;
-            let col_ref = &mut self.framebuffer.pixels_buffer[index];
-            return Some(col_ref);
-        }
-    }
-
-
+    
+    //REESCREVER PARA RETORNAR UM ENUM DE SHAPE
         pub fn draw_dynam(&mut self, draw_sel:u32, fix_x:u32, fix_y:u32, thickness: i32, color: Color, destination:(u32,u32)){
         /*for i in -thickness..thickness{
             let x = x as i32 + i;
@@ -102,11 +65,11 @@ impl Render{
             // desenha com thickness discreto
             if dx >= dy {
                 for o in -thickness..=thickness {
-                    self.put_pixel(x as u32, (y + o) as u32, color);
+                    self.framebuffer.put_pixel(x as u32, (y + o) as u32, color);
                 }
             } else {
                 for o in -thickness..=thickness {
-                    self.put_pixel((x + o) as u32, y as u32, color);
+                    self.framebuffer.put_pixel((x + o) as u32, y as u32, color);
                 }
             }
 
@@ -165,32 +128,44 @@ impl Render{
             let center_y = (y_ref_vertex1 + y_ref_vertex2 + y_ref_vertex3) / 3;
             self.fill(center_x as u32, center_y as u32, color);
         }
-    }    
-    /// Acesso somente-leitura ao buffer
-    pub fn buffer(&self) -> &[Color]{
-        &self.framebuffer.pixels_buffer
     }
     pub fn fill(&mut self, x_ref_point: u32, y_ref_point: u32, color: Color){
-        let paint_col = *self.return_pixel(x_ref_point, y_ref_point).unwrap();
-        if paint_col == color { return; }
+        match self.framebuffer.return_pixel(x_ref_point, y_ref_point) {
+            Some(addr_paint_col) => {
+            let paint_col = *addr_paint_col;
+            if paint_col == color { return; }
 
-        let mut stack = Vec::new();
-        stack.push((x_ref_point as i32, y_ref_point as i32));
+            let mut stack = Vec::new();
+            stack.push((x_ref_point as i32, y_ref_point as i32));
 
-        while let Some((x, y)) = stack.pop() {
-        if x < 0 || y < 0 { continue; }
-        if x >= self.framebuffer.width as i32 || y >= self.framebuffer.height as i32 { continue; }
+            while let Some((x, y)) = stack.pop() {
+            if x < 0 || y < 0 { continue; }
+            if x >= self.framebuffer.width as i32 || y >= self.framebuffer.height as i32 { continue; }
 
-        let pixel = self.return_pixel(x as u32, y as u32).unwrap();
-        if *pixel != paint_col { continue; }
+            match self.framebuffer.return_pixel(x as u32, y as u32){
+                Some(pixel) => {
+                            
+                    if *pixel != paint_col { continue; }
 
-        *pixel = color;
+                    *pixel = color;
 
-        stack.push((x + 1, y));
-        stack.push((x - 1, y));
-        stack.push((x, y + 1));
-        stack.push((x, y - 1));
+                    stack.push((x + 1, y));
+                    stack.push((x - 1, y));
+                    stack.push((x, y + 1));
+                    stack.push((x, y - 1));
+                }
+                None => {
+                    println!("Não achei pixel nenhum!")
+                }
+            }
         }
+
+            }
+            None => {
+                println!("Não achei cor nenhuma!")
+            }
+        }
+
     }
 
     pub fn draw_circle(
@@ -209,17 +184,17 @@ impl Render{
         let mut d = 1 - r;
 
         while x >= y {
-            self.put_pixel((cx + x) as u32, (cy + y) as u32, color);
-            self.put_pixel((cx + y) as u32, (cy + x) as u32, color);
+            self.framebuffer.put_pixel((cx + x) as u32, (cy + y) as u32, color);
+            self.framebuffer.put_pixel((cx + y) as u32, (cy + x) as u32, color);
 
-            self.put_pixel((cx - x) as u32, (cy + y) as u32, color);
-            self.put_pixel((cx - y) as u32, (cy + x) as u32, color);
+            self.framebuffer.put_pixel((cx - x) as u32, (cy + y) as u32, color);
+            self.framebuffer.put_pixel((cx - y) as u32, (cy + x) as u32, color);
 
-            self.put_pixel((cx - x) as u32, (cy - y) as u32, color);
-            self.put_pixel((cx - y) as u32, (cy - x) as u32, color);
+            self.framebuffer.put_pixel((cx - x) as u32, (cy - y) as u32, color);
+            self.framebuffer.put_pixel((cx - y) as u32, (cy - x) as u32, color);
 
-            self.put_pixel((cx + x) as u32, (cy - y) as u32, color);
-            self.put_pixel((cx + y) as u32, (cy - x) as u32, color);
+            self.framebuffer.put_pixel((cx + x) as u32, (cy - y) as u32, color);
+            self.framebuffer.put_pixel((cx + y) as u32, (cy - x) as u32, color);
             y += 1;
 
             if d < 0 {
@@ -247,7 +222,7 @@ impl Render{
             let d2 = dx*dx + dy*dy;
 
             if d2 <= ro2 && d2 >= ri2 {
-                self.put_pixel(x as u32, y as u32, color);
+                self.framebuffer.put_pixel(x as u32, y as u32, color);
             }
         }
     }

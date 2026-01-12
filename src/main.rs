@@ -6,8 +6,7 @@ use crate::renderer::{color::{self, Color}, framebuffer::{self, Framebuffer}, re
 
 fn main() {
     println!("Hello, world!");
-    let main_buffer = Framebuffer::new(600, 600);
-    let mut render: Render = Render::new(main_buffer, Color::ZERO);
+    let mut render: Render = Render::new(Framebuffer::new(600, 600));
     let mut window = Window::new(
         "Test - ESC to exit",
         render.framebuffer.width as usize,
@@ -33,23 +32,18 @@ fn main() {
         /*for i in render.buffer().iter_mut() {
             *i = 0; // write something more funny here!
         }*/
-        display.pixels_buffer = render.framebuffer.pixels_buffer.clone();
-        
+        display.update_buffer(render.framebuffer.cur_buffer());
         
         if let Some(overlay) = render.overlay_mut() {
             let mut count = 0;
-            for i in overlay.framebuffer.pixels_buffer.as_slice(){
+            for i in overlay.cur_buffer(){
                 if i.a > 0 {
-                    display.pixels_buffer.as_mut_slice()[count] = *i;
+                    display.update_color(*i,count);
                 }
                 count+=1;
             }
             overlay.clear(Color::ZERO);
-            
         }
-        
-        
-
         
         if window.is_key_pressed(Key::NumPadEnter, KeyRepeat::Yes){
             let raw = render.framebuffer.as_u8_buffer();
@@ -78,23 +72,23 @@ fn main() {
         }
         }
         if window.is_key_pressed(Key::NumPad0, KeyRepeat::No){
-            render.clear(Color::WHITE);
+            render.framebuffer.clear(Color::WHITE);
             count_but+=1;
         }
         if window.is_key_pressed(Key::NumPad1, KeyRepeat::No){
-            render.clear(Color::BLACK);
+            render.framebuffer.clear(Color::BLACK);
             count_but+=1;
         }
         if window.is_key_pressed(Key::NumPad2, KeyRepeat::No){
-            render.clear(Color::BLUE);
+            render.framebuffer.clear(Color::BLUE);
             count_but+=1;
         }
         if window.is_key_pressed(Key::NumPad3, KeyRepeat::No){
-            render.clear(Color::GREEN);
+            render.framebuffer.clear(Color::GREEN);
             count_but+=1;
         }
         if window.is_key_pressed(Key::NumPad4, KeyRepeat::No){
-            render.clear(Color::RED);
+            render.framebuffer.clear(Color::RED);
             count_but+=1;
         }
         if window.is_key_pressed(Key::Up, KeyRepeat::No){
@@ -207,16 +201,12 @@ fn main() {
                 
                     Some(last_mouse_pos) => {
                         pos_vec.push(last_mouse_pos);
-                        if let Some(overlay) = render.overlay_mut(){
                         while let Some((x,y)) =  pos_vec.pop(){
                             if brush_sel != 4{
-                            overlay.draw_dynam(brush_sel, x as u32, y as u32, cur_thickness, draw_color,(0,0));
+                            render.draw_dynam(brush_sel, x as u32, y as u32, cur_thickness, draw_color,(0,0));
                             }
-                        }
                     }
-
-                    }
-                    None => {
+                    } None => {
                         println!("Coordenada inválida!");
                     }
                 }            
