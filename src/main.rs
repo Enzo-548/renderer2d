@@ -9,8 +9,8 @@ fn main() {
     let mut render: Render = Render::new(Framebuffer::new(600, 600));
     let mut window = Window::new(
         "Test - ESC to exit",
-        render.framebuffer.width as usize,
-        render.framebuffer.height as usize,
+        render.layers[1].width as usize,
+        render.layers[1].height as usize,
         WindowOptions::default(),
     )
     .unwrap_or_else(|e| {
@@ -26,13 +26,13 @@ fn main() {
     let mut cur_thickness = 1;
     let mut brush_sel = 0;
     let mut out_count = 0;
-    let mut display = Framebuffer::new(render.framebuffer.width, render.framebuffer.height);
+    let mut display = Framebuffer::new(render.layers[1].width, render.layers[1].height);
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
         /*for i in render.buffer().iter_mut() {
             *i = 0; // write something more funny here!
         }*/
-        display.update_buffer(render.framebuffer.cur_buffer());
+        display.update_buffer(render.layers[1].cur_buffer());
         
         if let Some(overlay) = render.overlay_mut() {
             let mut count = 0;
@@ -46,12 +46,12 @@ fn main() {
         }
         
         if window.is_key_pressed(Key::NumPadEnter, KeyRepeat::Yes){
-            let raw = render.framebuffer.as_u8_buffer();
+            let raw = render.layers[1].as_u8_buffer();
 
             let name = format!("output{}", out_count);
 
             let img: ImageBuffer<Rgba<u8>, Vec<u8>> =
-            ImageBuffer::from_raw(render.framebuffer.width, render.framebuffer.height, raw)
+            ImageBuffer::from_raw(render.layers[1].width, render.layers[1].height, raw)
             .expect("Invalid framebuffer size");
             img.save(format!("assets/output/{name}.png")).expect("failed to save image");
             count_but += 1;
@@ -67,46 +67,46 @@ fn main() {
                     cur_thickness -= 1;
                 }
             
-            if cur_thickness < 0  || cur_thickness > render.framebuffer.width as i32{
+            if cur_thickness < 0  || cur_thickness > render.layers[1].width as i32{
             cur_thickness = 0;
         }
         }
         if window.is_key_pressed(Key::NumPad0, KeyRepeat::No){
-            render.framebuffer.clear(Color::WHITE);
+            render.layers[1].clear(Color::WHITE);
             count_but+=1;
         }
         if window.is_key_pressed(Key::NumPad1, KeyRepeat::No){
-            render.framebuffer.clear(Color::BLACK);
+            render.layers[1].clear(Color::BLACK);
             count_but+=1;
         }
         if window.is_key_pressed(Key::NumPad2, KeyRepeat::No){
-            render.framebuffer.clear(Color::BLUE);
+            render.layers[1].clear(Color::BLUE);
             count_but+=1;
         }
         if window.is_key_pressed(Key::NumPad3, KeyRepeat::No){
-            render.framebuffer.clear(Color::GREEN);
+            render.layers[1].clear(Color::GREEN);
             count_but+=1;
         }
         if window.is_key_pressed(Key::NumPad4, KeyRepeat::No){
-            render.framebuffer.clear(Color::RED);
+            render.layers[1].clear(Color::RED);
             count_but+=1;
         }
         if window.is_key_pressed(Key::Up, KeyRepeat::No){
-            let mid_canvas= render.framebuffer.width as i32/2;    
-                render.draw_line(mid_canvas, 0, mid_canvas, render.framebuffer.height as i32, cur_thickness, draw_color);
+            let mid_canvas= render.layers[1].width as i32/2;    
+                render.draw_line(1, mid_canvas, 0, mid_canvas, render.layers[1].height as i32, cur_thickness, draw_color);
                 count_but+=1;
         }
         if window.is_key_pressed(Key::Right, KeyRepeat::No){
-            let mid_canvas = render.framebuffer.height as i32/2;
-                render.draw_line(0, mid_canvas, render.framebuffer.width as i32, mid_canvas, cur_thickness, draw_color);
+            let mid_canvas = render.layers[1].height as i32/2;
+                render.draw_line(1,0, mid_canvas, render.layers[1].width as i32, mid_canvas, cur_thickness, draw_color);
                 count_but+=1;
         }
         if window.is_key_pressed(Key::Left, KeyRepeat::No){
-                render.draw_line(0, 0, render.framebuffer.width as i32, render.framebuffer.height as i32, cur_thickness, draw_color);
+                render.draw_line(1,0, 0, render.layers[1].width as i32, render.layers[1].height as i32, cur_thickness, draw_color);
                 count_but+=1;
         }
         if window.is_key_pressed(Key::Down, KeyRepeat::No){
-                render.draw_line(render.framebuffer.width as i32, 0, 0, render.framebuffer.height as i32, cur_thickness, draw_color);
+                render.draw_line(1, render.layers[1].width as i32, 0, 0, render.layers[1].height as i32, cur_thickness, draw_color);
                 count_but+=1;
         }
         if window.is_key_pressed(Key::RightShift, KeyRepeat::No){
@@ -125,9 +125,9 @@ fn main() {
             count_but+=1;
         }
         if window.is_key_pressed(Key::S, KeyRepeat::No){
-            let mid_width_canvas = (render.framebuffer.width/2) as i32;
-            let mid_height_canvas = (render.framebuffer.height/2) as i32;
-            render.draw_rectangle(
+            let mid_width_canvas = (render.layers[1].width/2) as i32;
+            let mid_height_canvas = (render.layers[1].height/2) as i32;
+            render.draw_rectangle( 1,
                 mid_width_canvas, 
                 mid_height_canvas, 
                 55, 
@@ -138,16 +138,16 @@ fn main() {
                 count_but+=1;
         }
         if window.is_key_pressed(Key::C, KeyRepeat::No){
-            let mid_width_canvas = (render.framebuffer.width/2) as i32;
-            let mid_height_canvas = (render.framebuffer.height/2) as i32;
-            render.draw_circle(mid_width_canvas, mid_height_canvas, 50, false, cur_thickness, draw_color);
+            let mid_width_canvas = (render.layers[1].width/2) as i32;
+            let mid_height_canvas = (render.layers[1].height/2) as i32;
+            render.draw_circle(1, mid_width_canvas, mid_height_canvas, 50, false, cur_thickness, draw_color);
             count_but += 1;
         }
 
         if window.is_key_pressed(Key::T, KeyRepeat::No){
-            let mid_width_canvas = (render.framebuffer.width/2) as i32;
-            let mid_height_canvas = (render.framebuffer.height/2) as i32;
-            render.draw_triangle(
+            let mid_width_canvas = (render.layers[1].width/2) as i32;
+            let mid_height_canvas = (render.layers[1].height/2) as i32;
+            render.draw_triangle( 1,
                 mid_width_canvas, mid_height_canvas-50,
                 mid_width_canvas-50, mid_height_canvas+50,
                 mid_width_canvas+50, mid_height_canvas+50, false, cur_thickness, draw_color);
@@ -155,9 +155,9 @@ fn main() {
         }
         
         if window.is_key_pressed(Key::F, KeyRepeat::No){
-            let mid_width_canvas = render.framebuffer.width/2;
-            let mid_height_canvas = render.framebuffer.height/2;
-            render.fill(mid_width_canvas, mid_height_canvas, draw_color);
+            let mid_width_canvas = render.layers[1].width/2;
+            let mid_height_canvas = render.layers[1].height/2;
+            render.fill(1, mid_width_canvas, mid_height_canvas, draw_color);
             count_but+=1;
         }
             let is_mouse_valid = window
@@ -182,12 +182,12 @@ fn main() {
                             if brush_sel == 4{
                                 let fix_x = x;
                                 let fix_y = y;
-                                while !window.get_mouse_down(minifb::MouseButton::Left){
+                                while window.get_mouse_down(minifb::MouseButton::Left){
                                 
-                                render.draw_dynam(brush_sel, fix_x as u32, fix_y as u32, cur_thickness, draw_color, (x as u32,y as u32));        
+                                render.draw_dynam(1, brush_sel, fix_x as u32, fix_y as u32, cur_thickness, draw_color, (x as u32,y as u32));        
                                 }
                             }
-                            render.draw_dynam(brush_sel, x as u32, y as u32, cur_thickness, draw_color, (0,0));
+                            render.draw_dynam(1, brush_sel, x as u32, y as u32, cur_thickness, draw_color, (0,0));
                         }
 
                     }
@@ -203,7 +203,7 @@ fn main() {
                         pos_vec.push(last_mouse_pos);
                         while let Some((x,y)) =  pos_vec.pop(){
                             if brush_sel != 4{
-                            render.draw_dynam(brush_sel, x as u32, y as u32, cur_thickness, draw_color,(0,0));
+                            render.draw_dynam(0, brush_sel, x as u32, y as u32, cur_thickness, draw_color,(0,0));
                             }
                     }
                     } None => {

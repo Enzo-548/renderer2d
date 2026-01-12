@@ -1,3 +1,5 @@
+use image::buffer;
+
 use crate::renderer::color::*;
 
 #[derive (Debug)]
@@ -73,9 +75,7 @@ impl Framebuffer{
         self.pixels_buffer.as_mut_slice()
     }
     pub fn update_buffer(&mut self, buffer: &[Color]){
-        let mut vec_buf = Vec::new();
-        vec_buf.copy_from_slice(buffer);
-        self.pixels_buffer = vec_buf;
+        self.pixels_buffer.copy_from_slice(buffer);
     }
     pub fn update_color(&mut self, col: Color, index: usize){
         self.cur_buffer_as_mut()[index] = col;
