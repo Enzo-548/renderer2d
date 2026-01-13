@@ -1,4 +1,4 @@
-use crate::renderer::color::Color;
+use crate::renderer::{color::Color, render::Render};
 pub enum ShapeKind {
     Rect { origin: (f32, f32), w: f32, h: f32 },
     Circle { center: (f32, f32), r: f32 },
@@ -8,7 +8,7 @@ pub enum ShapeKind {
     
 }
 
-struct Shape{
+pub struct Shape{
     pub kind: ShapeKind,
     pub outline_color: Color,
     pub inline_color: Color,
@@ -53,7 +53,9 @@ impl Shape{
         self.kind.rotate(angle);
     }
 
-
+    pub fn rasterize(&self, renderer: &mut Render, layer:usize, thickness:i32){
+        renderer.shape_draw(&self,layer,thickness);
+    }
 }
 
 impl ShapeKind {

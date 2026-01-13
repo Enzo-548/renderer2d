@@ -171,7 +171,9 @@ fn main() {
             });
 
             let mut last_mouse_pos: Option<(f32, f32)> = None;
+        
 
+        //ESCREVER DRAW LOOP
         if is_mouse_valid || window.get_mouse_down(minifb::MouseButton::Left){
             let mut pos_vec = Vec::new();
             if window.get_mouse_down(minifb::MouseButton::Left){
