@@ -189,8 +189,6 @@ fn main() {
                                 render.draw_dynam(1, brush_sel, fix_x as u32, fix_y as u32, cur_thickness, draw_color, (x as u32,y as u32));        
                                 }
                             }*/
-                            
-                            render.overlay_mut().unwrap().update_buffer(display.cur_buffer());
                             render.draw_dynam(1, brush_sel, x as u32, y as u32, cur_thickness, draw_color, (0,0));
                         }
 
@@ -206,13 +204,18 @@ fn main() {
                     Some(last_mouse_pos) => {
                         pos_vec.push(last_mouse_pos);
                         while let Some((x,y)) =  pos_vec.pop(){
-                            if brush_sel != 4{
+                            if brush_sel == 3 {
+                            let base_buffer = {
+                                let buf = render.layers[1].cur_buffer();
+                                buf.to_vec()
+                            };
+                            render.layers[0].update_buffer(&base_buffer);
                             render.draw_dynam(0, brush_sel, x as u32, y as u32, cur_thickness, draw_color,(0,0));
-                            }else if brush_sel == 3 {
-                            //render.overlay_mut().unwrap().update_buffer(display.cur_buffer());    
-                            render.draw_dynam(0, brush_sel, x as u32, y as u32, cur_thickness, draw_color,(0,0));
+                            }else if brush_sel == 4{
+                            brush_sel = 0;
                             }else{
-                                brush_sel = 0;
+                            render.draw_dynam(0, brush_sel, x as u32, y as u32, cur_thickness, draw_color,(0,0));
+                                
                             }
                     }
                     } None => {
