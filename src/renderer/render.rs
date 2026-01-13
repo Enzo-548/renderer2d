@@ -110,7 +110,6 @@ impl Render{
     x_ref_vertex1:i32, y_ref_vertex1:i32,
     x_ref_vertex2:i32, y_ref_vertex2:i32, 
     x_ref_vertex3:i32, y_ref_vertex3:i32, is_filled:bool, thickness: i32, color:Color){
-        let fb = &mut self.layers[layer];
         let r = thickness;
 
         self.draw_circle(layer,x_ref_vertex1, y_ref_vertex1, r, true, 0, color);

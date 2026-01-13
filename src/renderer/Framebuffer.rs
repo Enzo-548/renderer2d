@@ -1,5 +1,3 @@
-use image::buffer;
-
 use crate::renderer::color::*;
 
 #[derive (Debug)]

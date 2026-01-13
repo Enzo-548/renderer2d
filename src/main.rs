@@ -2,7 +2,7 @@ mod renderer;
 
 use minifb::{Key, KeyRepeat, Window, WindowOptions};
 use image::{ImageBuffer, Rgba};
-use crate::renderer::{color::{self, Color}, framebuffer::{self, Framebuffer}, render::Render};
+use crate::renderer::{color::{Color}, framebuffer::{Framebuffer}, render::Render};
 
 fn main() {
     println!("Hello, world!");
@@ -39,9 +39,11 @@ fn main() {
             for i in overlay.cur_buffer(){
                 if i.a > 0 {
                     display.update_color(*i,count);
+                }else {
+                    
                 }
                 count+=1;
-            }
+            } 
             overlay.clear(Color::ZERO);
         }
         
@@ -179,14 +181,16 @@ fn main() {
                         pos_vec.push(last_mouse_pos);
 
                         while let Some((x,y)) =  pos_vec.pop(){
-                            if brush_sel == 4{
+                           /* if brush_sel == 4{
                                 let fix_x = x;
                                 let fix_y = y;
                                 while window.get_mouse_down(minifb::MouseButton::Left){
                                 
                                 render.draw_dynam(1, brush_sel, fix_x as u32, fix_y as u32, cur_thickness, draw_color, (x as u32,y as u32));        
                                 }
-                            }
+                            }*/
+                            
+                            render.overlay_mut().unwrap().update_buffer(display.cur_buffer());
                             render.draw_dynam(1, brush_sel, x as u32, y as u32, cur_thickness, draw_color, (0,0));
                         }
 
@@ -204,6 +208,11 @@ fn main() {
                         while let Some((x,y)) =  pos_vec.pop(){
                             if brush_sel != 4{
                             render.draw_dynam(0, brush_sel, x as u32, y as u32, cur_thickness, draw_color,(0,0));
+                            }else if brush_sel == 3 {
+                            //render.overlay_mut().unwrap().update_buffer(display.cur_buffer());    
+                            render.draw_dynam(0, brush_sel, x as u32, y as u32, cur_thickness, draw_color,(0,0));
+                            }else{
+                                brush_sel = 0;
                             }
                     }
                     } None => {
