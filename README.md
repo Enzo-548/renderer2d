@@ -169,10 +169,15 @@ This project is provided for educational purposes. Use it freely to learn and ex
 
 ---
 
+## 📼 Demo
+
+![Drawing with brush Demo](assets/demo/small_draw_demo.gif)
+
+---
+
 ## 🖼️ Screenshots
 
 ![Lines Demo](assets/screenshots/colored-lines-with-all-colors.png)
-![Drawing with brush Demo](assets/demo/small_draw_demo.gif)
 ![Circle Demo](assets/screenshots/green-circle-with-blue-outline.png)
 ![Square Demo](assets/screenshots/red-square-with-black-outline.png)
 ![Square Brush Demo](assets/screenshots/glad-and-stilish-girl.png)
