@@ -48,15 +48,18 @@ src/
 
 ### Module Responsibilities
 
-* **`Color`**
+* **`color.rs`**
   Simple RGBA color type with predefined constants (RED, GREEN, BLUE, ALPHA).
 
-* **`Framebuffer`**
-  Stores pixel data and dimensions. Provides conversion to a `Vec<u32>` suitable for `minifb`, and a `Vec<u8>` suitable for image export.
+* **`framebuffer.rs`**
+  Stores pixel data, dimensions and the main/background color of the pixels. Provides conversion to a `Vec<u32>` suitable for `minifb`, a `Vec<u8>` suitable for image export. Also provides drawing operations such as `clear`, `put_pixel` and `return_pixel`.
 
-* **`Render`**
-  Owns the background color, the main framebuffer, and an explicit array of layers. Provides drawing operations such as `clear`, `put_pixel`, `return_pixel`, and `draw_*` primitives.
+* **`render.rs`**
+  Owns the explicit array of layers that include the main framebuffer and an preview/overlay buffer. Provides `draw_*` primitives, by using the draw operations of the framebuffers in the layer.
 
+* **`shape.rs`**
+  Stores an kind of shape definition and the color information of the shape. Provides transform operations and the rasterization operation to draw the shape in the render.
+  
 * **`main.rs`**
   Orchestrates the application loop, handles keyboard and mouse input, and presents the composed framebuffer using `minifb`.
 
@@ -92,6 +95,8 @@ The numeric keypad controls screen color and drawing parameters:
 | NumPad 4     | Red screen                                           |
 | NumPad Plus  | Increase thickness                                   |
 | NumPad Minus | Decrease thickness                                   |
+| LeftShift    | Changes the dynamic brush draw type                  |
+| RightShift   | Changes the draw brush                               |
 | S            | Draw a square                                        |
 | T            | Draw a triangle                                      |
 | C            | Draw a circle                                        |
@@ -100,7 +105,7 @@ The numeric keypad controls screen color and drawing parameters:
 | Arrow Left   | Draw a horizontal line from the middle-left          |
 | Arrow Down   | Draw a diagonal line from the top-right              |
 | Arrow Right  | Draw a diagonal line from the top-left               |
-| Mouse Left   | Square brush (preview on overlay, commit on release) |
+| Mouse Left   | Draw with the selected brush (preview on overlay, commit on release) |
 | NumPad Enter | Save the current buffer to `assets/output`           |
 | ESC          | Exit the program                                     |
 
@@ -134,7 +139,6 @@ Input → Render State → Shapes → Rasterization → Layers → Framebuffer �
 
 ## 🚧 Current Limitations
 
-* No coordinate transforms
 * No user-defined custom primitives
 * CPU-only rendering by design
 * Trade-offs favor simplicity and readability over raw performance
@@ -145,8 +149,6 @@ These limitations are intentional at this stage.
 
 ## 🛣️ Possible Next Steps (not commitments)
 
-* Introduce basic coordinate transforms (translation, scaling)
-* Formalize shapes as data structures with explicit bounds
 * Optional exploration of a GPU backend (`wgpu`) without changing the core architecture
 
 ---
@@ -157,7 +159,7 @@ This project was built as a **learning exercise** for:
 
 * applying Rust ownership, borrowing, and lifetimes in a renderer-style codebase
 * understanding low-level rendering concepts
-* practicing modular design and explicit architectural trade-offs
+* practicing modular design and explicit architectural trade-offs and software building
 
 ---
 
