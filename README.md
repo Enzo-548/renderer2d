@@ -7,11 +7,24 @@ The focus is not performance or GPU acceleration, but **architectural clarity** 
 
 It implements a custom framebuffer, explicit rendering layers, basic drawing operations, keyboard and mouse-driven interaction, and uses **minifb** purely as a lightweight window backend.
 
-🚧 Work in progress — issues and feedback welcome
+## Why this project exists
+
+This renderer explores **software construction outside frameworks**, focusing on making
+architectural decisions explicit rather than hidden behind abstractions. Feedback and discussion on architectural trade-offs are welcome.
+
+It deliberately prioritizes:
+- architectural clarity over performance
+- explicit data flow over implicit state
+- incremental construction over feature breadth
+
+This is not a graphics engine, but a **learning-oriented software artifact**
+designed to make trade-offs visible and discussable.
 
 ---
 
 ## ✨ Features
+
+🚧 Work in progress
 
 * **Explicit layered framebuffer model** (overlay vs committed content)
 * Custom **RGBA framebuffer** stored entirely in CPU memory
