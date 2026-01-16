@@ -1,8 +1,8 @@
 mod renderer;
 
-use minifb::{Key, KeyRepeat, Window, WindowOptions};
+use minifb::{HasWindowHandle, Key, KeyRepeat, Window, WindowOptions};
 use image::{ImageBuffer, Rgba};
-use crate::renderer::{color::{Color}, framebuffer::{Framebuffer}, render::Render};
+use crate::renderer::{color::Color, framebuffer::Framebuffer, render::Render, shape::Shape};
 
 fn main() {
     println!("Hello, world!");
@@ -129,20 +129,14 @@ fn main() {
         if window.is_key_pressed(Key::S, KeyRepeat::No){
             let mid_width_canvas = (render.layers[1].width/2) as i32;
             let mid_height_canvas = (render.layers[1].height/2) as i32;
-            render.draw_rectangle( 1,
-                mid_width_canvas, 
-                mid_height_canvas, 
-                55, 
-                55,
-                false,
-                cur_thickness, 
-                draw_color);
-                count_but+=1;
+            let square = Shape::new_defined_monochrome(
+                renderer::shape::ShapeKind::Rect { center: (mid_height_canvas as f32, mid_width_canvas as f32), half_w: 150.0, half_h: 150.0},
+                draw_color).rasterize(&mut render, 1, cur_thickness);
         }
         if window.is_key_pressed(Key::C, KeyRepeat::No){
             let mid_width_canvas = (render.layers[1].width/2) as i32;
             let mid_height_canvas = (render.layers[1].height/2) as i32;
-            render.draw_circle(1, mid_width_canvas, mid_height_canvas, 50, false, cur_thickness, draw_color);
+            render.draw_circle(1, mid_width_canvas, mid_height_canvas, 50, cur_thickness, draw_color);
             count_but += 1;
         }
 
@@ -152,14 +146,14 @@ fn main() {
             render.draw_triangle( 1,
                 mid_width_canvas, mid_height_canvas-50,
                 mid_width_canvas-50, mid_height_canvas+50,
-                mid_width_canvas+50, mid_height_canvas+50, false, cur_thickness, draw_color);
+                mid_width_canvas+50, mid_height_canvas+50, cur_thickness, draw_color);
                 count_but+=1;
         }
         
         if window.is_key_pressed(Key::F, KeyRepeat::No){
             let mid_width_canvas = render.layers[1].width/2;
             let mid_height_canvas = render.layers[1].height/2;
-            render.fill(1, mid_width_canvas, mid_height_canvas, draw_color);
+            render.bucket_fill(1, mid_width_canvas, mid_height_canvas, draw_color);
             count_but+=1;
         }
             let is_mouse_valid = window
@@ -173,7 +167,53 @@ fn main() {
             let mut last_mouse_pos: Option<(f32, f32)> = None;
         
 
-        //ESCREVER DRAW LOOP
+        pub fn draw_shape_loop(
+            shape: &mut Shape, 
+            window: &Window, 
+            cur_thickness: i32,
+            render: &mut Render
+        ){
+        while !window.is_key_down(Key::Enter){
+            let arrow_pressed = {
+                        window.is_key_down(Key::Up) 
+                        || window.is_key_down(Key::Down)
+                        || window.is_key_down(Key::Right)
+                        || window.is_key_down(Key::Left)
+            };
+            let mut x = 0.0;
+            let mut y = 0.0;
+            let rot = if window.is_key_down(Key::Right) { 1.0 }
+            else if window.is_key_down(Key::Left) { -1.0 }
+            else { 0.0 };
+                            if window.is_key_down(Key::Up){
+                                y += 1.0;
+                            }
+                            if window.is_key_down(Key::Down){
+                                y -= 1.0;
+                            }
+                            if window.is_key_down(Key::Right){
+                                x += 1.0;
+                            }
+                            if window.is_key_down(Key::Left){
+                                x -= 1.0;
+                            }
+                        if arrow_pressed && window.is_key_down(Key::M)
+                        {
+                            shape.translate(x, y);
+                        }
+                        if arrow_pressed && window.is_key_down(Key::S)
+                        {
+                            shape.scale(1.0 + x * 0.01, 1.0 + y * 0.01);
+                        }
+                        if window.is_key_down(Key::Right)
+                            || window.is_key_down(Key::Left)
+                        {
+                            shape.rotate(rot);
+                        }
+                shape.rasterize(render, 1, cur_thickness);
+            }
+        }
+
         if is_mouse_valid || window.get_mouse_down(minifb::MouseButton::Left){
             let mut pos_vec = Vec::new();
             if window.get_mouse_down(minifb::MouseButton::Left){
@@ -207,17 +247,21 @@ fn main() {
                         pos_vec.push(last_mouse_pos);
                         while let Some((x,y)) =  pos_vec.pop(){
                             if brush_sel == 3 {
+
                             let base_buffer = {
                                 let buf = render.layers[1].cur_buffer();
                                 buf.to_vec()
                             };
+
                             render.layers[0].update_buffer(&base_buffer);
+
                             render.draw_dynam(0, brush_sel, x as u32, y as u32, cur_thickness, draw_color,(0,0));
                             }else if brush_sel == 4{
                             brush_sel = 0;
                             }else{
                             render.draw_dynam(0, brush_sel, x as u32, y as u32, cur_thickness, draw_color,(0,0));
-                                
+                                    //draw_shape_loop(&mut shape, &window, cur_thickness, &mut render);
+                                    //shape.rasterize(&mut render, 1, cur_thickness);
                             }
                     }
                     } None => {

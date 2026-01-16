@@ -1,6 +1,6 @@
 use crate::renderer::{color::Color, render::Render};
 pub enum ShapeKind {
-    Rect { origin: (f32, f32), w: f32, h: f32 },
+    Rect { center: (f32, f32), half_w: f32, half_h: f32 },
     Circle { center: (f32, f32), r: f32 },
     Ellipse { center: (f32, f32), rx: f32, ry: f32 },
     Line { a: (f32,f32), b:(f32,f32) },
@@ -54,14 +54,14 @@ impl Shape{
     }
 
     pub fn rasterize(&self, renderer: &mut Render, layer:usize, thickness:i32){
-        renderer.shape_draw(&self,layer,thickness);
+        renderer.draw_shape(&self,layer,thickness);
     }
 }
 
 impl ShapeKind {
     fn translate(&mut self, dx: f32, dy: f32) {
         match self {
-            ShapeKind::Rect { origin, .. } => {
+            ShapeKind::Rect { center: origin, .. } => {
                 origin.0 += dx;
                 origin.1 += dy;
             }
@@ -89,7 +89,7 @@ impl ShapeKind {
     }
     fn scale(&mut self, sx: f32, sy: f32){
         match self {
-            ShapeKind::Rect {w, h, ..} => {
+            ShapeKind::Rect {half_w: w, half_h: h, ..} => {
                     *w *= sx;
                     *h *= sy;
             }
@@ -149,7 +149,7 @@ impl ShapeKind {
                 )
             }
             match self {
-            ShapeKind::Rect { origin, .. } => {
+            ShapeKind::Rect { center: origin, .. } => {
                 let (x, y) = *origin;
                 let (rx, ry) = rotate_point(x, y, 0.0, 0.0, angle);
                 *origin = (rx, ry);
