@@ -39,8 +39,6 @@ fn main() {
             for i in overlay.cur_buffer(){
                 if i.a > 0 {
                     display.update_color(*i,count);
-                }else {
-                    
                 }
                 count+=1;
             } 
@@ -129,25 +127,31 @@ fn main() {
         if window.is_key_pressed(Key::S, KeyRepeat::No){
             let mid_width_canvas = (render.layers[1].width/2) as i32;
             let mid_height_canvas = (render.layers[1].height/2) as i32;
-            let square = Shape::new_defined_monochrome(
+            let _square = Shape::new_defined_monochrome(
                 renderer::shape::ShapeKind::Rect { center: (mid_height_canvas as f32, mid_width_canvas as f32), half_w: 150.0, half_h: 150.0},
                 draw_color).rasterize(&mut render, 1, cur_thickness);
         }
         if window.is_key_pressed(Key::C, KeyRepeat::No){
             let mid_width_canvas = (render.layers[1].width/2) as i32;
             let mid_height_canvas = (render.layers[1].height/2) as i32;
-            render.draw_circle(1, mid_width_canvas, mid_height_canvas, 50, cur_thickness, draw_color);
+            let _circle = Shape::new_defined_monochrome(
+                renderer::shape::ShapeKind::Circle {center: (mid_height_canvas as f32, mid_width_canvas as f32), r: 50.0 },
+                draw_color,
+            ).rasterize(&mut render, 1, cur_thickness);
             count_but += 1;
         }
 
         if window.is_key_pressed(Key::T, KeyRepeat::No){
-            let mid_width_canvas = (render.layers[1].width/2) as i32;
-            let mid_height_canvas = (render.layers[1].height/2) as i32;
-            render.draw_triangle( 1,
-                mid_width_canvas, mid_height_canvas-50,
-                mid_width_canvas-50, mid_height_canvas+50,
-                mid_width_canvas+50, mid_height_canvas+50, cur_thickness, draw_color);
-                count_but+=1;
+            let mid_width_canvas = (render.layers[1].width/2) as f32;
+            let mid_height_canvas = (render.layers[1].height/2) as f32;
+            let _triangle = Shape::new_defined_monochrome(
+                renderer::shape::ShapeKind::Polygon { vertices: vec![
+                    (mid_width_canvas, mid_height_canvas-50.0),
+                    (mid_width_canvas-50.0, mid_height_canvas+50.0),
+                    (mid_width_canvas+50.0, mid_height_canvas+50.0)
+                ]}, 
+                draw_color).rasterize(&mut render, 1, cur_thickness);
+            
         }
         
         if window.is_key_pressed(Key::F, KeyRepeat::No){
@@ -169,10 +173,24 @@ fn main() {
 
         pub fn draw_shape_loop(
             shape: &mut Shape, 
-            window: &Window, 
+            window: &mut Window, 
             cur_thickness: i32,
-            render: &mut Render
+            render: &mut Render,
+            display: &mut Framebuffer
         ){
+        display.update_buffer(render.layers[1].cur_buffer());
+        
+        if let Some(overlay) = render.overlay_mut() {
+            let mut count = 0;
+            for i in overlay.cur_buffer(){
+                if i.a > 0 {
+                    display.update_color(*i,count);
+                }
+                count+=1;
+            } 
+            overlay.clear(Color::ZERO);
+        }
+
         while !window.is_key_down(Key::Enter){
             let arrow_pressed = {
                         window.is_key_down(Key::Up) 
@@ -211,6 +229,9 @@ fn main() {
                             shape.rotate(rot);
                         }
                 shape.rasterize(render, 1, cur_thickness);
+                window
+                .update_with_buffer(&display.as_u32_buffer(), display.width as usize, display.height as usize)
+                .unwrap();
             }
         }
 
@@ -259,8 +280,8 @@ fn main() {
                             }else if brush_sel == 4{
                             brush_sel = 0;
                             }else{
-                            render.draw_dynam(0, brush_sel, x as u32, y as u32, cur_thickness, draw_color,(0,0));
-                                    //draw_shape_loop(&mut shape, &window, cur_thickness, &mut render);
+                                    render.draw_dynam(0, brush_sel, x as u32, y as u32, cur_thickness, draw_color,(0,0));
+                                    //draw_shape_loop(&mut shape, &window, cur_thickness, &mut render, &mut display);
                                     //shape.rasterize(&mut render, 1, cur_thickness);
                             }
                     }
