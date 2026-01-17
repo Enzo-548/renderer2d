@@ -171,15 +171,59 @@ fn main() {
             let mut last_mouse_pos: Option<(f32, f32)> = None;
         
 
-        pub fn draw_shape_loop(
-            shape: &mut Shape, 
+        pub fn draw_shape_loop( 
+            shape_array: &mut Vec<Shape>,
             window: &mut Window, 
-            cur_thickness: i32,
+            cur_thickness: &mut i32,
             render: &mut Render,
-            display: &mut Framebuffer
+            display: &mut Framebuffer,
+            color_array: [Color; 5]
         ){
+        //let (mut col_sel_inline, mut col_sel_outline) = (0,0);
+        let mut shape_sel = 0;
+        let mut shape:&mut Shape = &mut shape_array[shape_sel];
+        while !window.is_key_down(Key::Enter){
+        if window.is_key_pressed(Key::LeftShift, KeyRepeat::No){
+                shape_sel += 1;
+                if shape_sel >= 3{
+                    shape_sel = 0;
+                }
+        }
+        shape = &mut shape_array[shape_sel];
+        /*if window.is_key_pressed(Key::Period,KeyRepeat::No) || window.is_key_pressed(Key::Comma,KeyRepeat::No){
+            render.overlay_mut().unwrap().clear(Color::ZERO);
+            if window.is_key_pressed(Key::Period,KeyRepeat::No){
+                col_sel_inline+=1;
+                }
+            if window.is_key_pressed(Key::Comma,KeyRepeat::No){
+                col_sel_outline+=1;
+                }
+            if col_sel_outline >= 5 || col_sel_inline >= 5 {
+                if col_sel_inline >= 5{
+                    col_sel_inline = 0;
+                }
+                if col_sel_outline >= 5 {
+                    col_sel_outline = 0;
+                }
+                
+            shape.inline_color = color_array[col_sel_inline];
+            shape.outline_color = color_array[col_sel_outline];
+            }
+        }*/
+            if window.is_key_pressed(Key::NumPadPlus, KeyRepeat::Yes) || window.is_key_pressed(Key::NumPadMinus, KeyRepeat::Yes)
+        {
+                if window.is_key_pressed(Key::NumPadPlus, KeyRepeat::Yes){
+                    *cur_thickness += 1;
+                }
+                if window.is_key_pressed(Key::NumPadMinus, KeyRepeat::Yes){
+                    *cur_thickness -= 1;
+                }
+            
+            if *cur_thickness < 0  || *cur_thickness > render.layers[1].width as i32{
+            *cur_thickness = 0;
+            }
+        }
         display.update_buffer(render.layers[1].cur_buffer());
-        
         if let Some(overlay) = render.overlay_mut() {
             let mut count = 0;
             for i in overlay.cur_buffer(){
@@ -190,8 +234,6 @@ fn main() {
             } 
             overlay.clear(Color::ZERO);
         }
-
-        while !window.is_key_down(Key::Enter){
             let arrow_pressed = {
                         window.is_key_down(Key::Up) 
                         || window.is_key_down(Key::Down)
@@ -218,23 +260,40 @@ fn main() {
                         if arrow_pressed && window.is_key_down(Key::M)
                         {
                             shape.translate(x, y);
-                        }
-                        if arrow_pressed && window.is_key_down(Key::S)
+                        } else if arrow_pressed && window.is_key_down(Key::S)
                         {
                             shape.scale(1.0 + x * 0.01, 1.0 + y * 0.01);
-                        }
-                        if window.is_key_down(Key::Right)
-                            || window.is_key_down(Key::Left)
+                        }else if window.is_key_pressed(Key::Right,KeyRepeat::Yes)
+                            || window.is_key_pressed(Key::Left,KeyRepeat::Yes)
                         {
                             shape.rotate(rot);
                         }
-                shape.rasterize(render, 1, cur_thickness);
+                shape.rasterize(render, 0, *cur_thickness);
                 window
                 .update_with_buffer(&display.as_u32_buffer(), display.width as usize, display.height as usize)
                 .unwrap();
             }
+            (*shape).rasterize(render, 1, *cur_thickness);
         }
-
+        if window.is_key_down(Key::X){
+                                   let mid_width_canvas = (render.layers[1].width/2) as f32;
+                                    let mid_height_canvas = (render.layers[1].height/2) as f32;
+                                    let triangle = Shape::new_defined_monochrome(
+                                        renderer::shape::ShapeKind::Polygon { vertices: vec![
+                                            (mid_width_canvas, mid_height_canvas-50.0),
+                                            (mid_width_canvas-50.0, mid_height_canvas+50.0),
+                                            (mid_width_canvas+50.0, mid_height_canvas+50.0)
+                                        ]},
+                                        draw_color);
+                                    let square = Shape::new_defined_monochrome(
+                                    renderer::shape::ShapeKind::Rect { center: (mid_height_canvas as f32, mid_width_canvas as f32), half_w: 150.0, half_h: 150.0},
+                                    draw_color);
+                                    let circle = Shape::new_defined_monochrome(
+                                                        renderer::shape::ShapeKind::Circle {center: (mid_height_canvas as f32, mid_width_canvas as f32), r: 50.0 },
+                                                        draw_color,
+                                                    );
+                                    draw_shape_loop(&mut vec![triangle, square, circle],&mut window, &mut cur_thickness, &mut render, &mut display, color_array);
+        }
         if is_mouse_valid || window.get_mouse_down(minifb::MouseButton::Left){
             let mut pos_vec = Vec::new();
             if window.get_mouse_down(minifb::MouseButton::Left){
@@ -281,9 +340,7 @@ fn main() {
                             brush_sel = 0;
                             }else{
                                     render.draw_dynam(0, brush_sel, x as u32, y as u32, cur_thickness, draw_color,(0,0));
-                                    //draw_shape_loop(&mut shape, &window, cur_thickness, &mut render, &mut display);
-                                    //shape.rasterize(&mut render, 1, cur_thickness);
-                            }
+                                    }
                     }
                     } None => {
                         println!("Coordenada inválida!");
