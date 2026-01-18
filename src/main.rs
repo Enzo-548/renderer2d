@@ -2,7 +2,7 @@ mod renderer;
 
 use minifb::{HasWindowHandle, Key, KeyRepeat, Window, WindowOptions};
 use image::{ImageBuffer, Rgba};
-use crate::renderer::{color::Color, framebuffer::Framebuffer, render::Render, shape::Shape};
+use crate::renderer::{color::{self, Color}, framebuffer::Framebuffer, render::Render, shape::Shape};
 
 fn main() {
     println!("Hello, world!");
@@ -179,7 +179,7 @@ fn main() {
             display: &mut Framebuffer,
             color_array: [Color; 5]
         ){
-        //let (mut col_sel_inline, mut col_sel_outline) = (0,0);
+        let (mut col_sel_inline, mut col_sel_outline) = (0,0);
         let mut shape_sel = 0;
         let mut shape:&mut Shape = &mut shape_array[shape_sel];
         while !window.is_key_down(Key::Enter){
@@ -190,28 +190,9 @@ fn main() {
                 }
         }
         shape = &mut shape_array[shape_sel];
-        /*if window.is_key_pressed(Key::Period,KeyRepeat::No) || window.is_key_pressed(Key::Comma,KeyRepeat::No){
-            render.overlay_mut().unwrap().clear(Color::ZERO);
-            if window.is_key_pressed(Key::Period,KeyRepeat::No){
-                col_sel_inline+=1;
-                }
-            if window.is_key_pressed(Key::Comma,KeyRepeat::No){
-                col_sel_outline+=1;
-                }
-            if col_sel_outline >= 5 || col_sel_inline >= 5 {
-                if col_sel_inline >= 5{
-                    col_sel_inline = 0;
-                }
-                if col_sel_outline >= 5 {
-                    col_sel_outline = 0;
-                }
-                
-            shape.inline_color = color_array[col_sel_inline];
-            shape.outline_color = color_array[col_sel_outline];
-            }
-        }*/
-            if window.is_key_pressed(Key::NumPadPlus, KeyRepeat::Yes) || window.is_key_pressed(Key::NumPadMinus, KeyRepeat::Yes)
-        {
+        shape.inline_color = color_array[col_sel_inline];
+        shape.outline_color = color_array[col_sel_outline];
+        if window.is_key_pressed(Key::NumPadPlus, KeyRepeat::Yes) || window.is_key_pressed(Key::NumPadMinus, KeyRepeat::Yes){
                 if window.is_key_pressed(Key::NumPadPlus, KeyRepeat::Yes){
                     *cur_thickness += 1;
                 }
@@ -221,6 +202,23 @@ fn main() {
             
             if *cur_thickness < 0  || *cur_thickness > render.layers[1].width as i32{
             *cur_thickness = 0;
+            }
+        }
+        if window.is_key_pressed(Key::Comma, KeyRepeat::No) || window.is_key_pressed(Key::Period, KeyRepeat::No){ 
+            if window.is_key_pressed(Key::Comma, KeyRepeat::No){
+                col_sel_inline +=1;
+            }
+            if window.is_key_pressed(Key::Period, KeyRepeat::No){
+                col_sel_outline+=1;
+                
+            }
+            if col_sel_inline >= color_array.len() || col_sel_outline >= color_array.len(){
+                if col_sel_inline >= color_array.len(){
+                    col_sel_inline = 0;
+                }
+                if col_sel_outline >= color_array.len(){
+                    col_sel_outline = 0;
+                }
             }
         }
         display.update_buffer(render.layers[1].cur_buffer());
@@ -278,19 +276,22 @@ fn main() {
         if window.is_key_down(Key::X){
                                    let mid_width_canvas = (render.layers[1].width/2) as f32;
                                     let mid_height_canvas = (render.layers[1].height/2) as f32;
-                                    let triangle = Shape::new_defined_monochrome(
+                                    let triangle = Shape::new_defined_polychrome(
                                         renderer::shape::ShapeKind::Polygon { vertices: vec![
                                             (mid_width_canvas, mid_height_canvas-50.0),
                                             (mid_width_canvas-50.0, mid_height_canvas+50.0),
                                             (mid_width_canvas+50.0, mid_height_canvas+50.0)
                                         ]},
-                                        draw_color);
-                                    let square = Shape::new_defined_monochrome(
+                                        draw_color,
+                                        Color::ZERO);
+                                    let square = Shape::new_defined_polychrome(
                                     renderer::shape::ShapeKind::Rect { center: (mid_height_canvas as f32, mid_width_canvas as f32), half_w: 150.0, half_h: 150.0},
-                                    draw_color);
-                                    let circle = Shape::new_defined_monochrome(
+                                    draw_color,
+                                    Color::ZERO);
+                                    let circle = Shape::new_defined_polychrome(
                                                         renderer::shape::ShapeKind::Circle {center: (mid_height_canvas as f32, mid_width_canvas as f32), r: 50.0 },
                                                         draw_color,
+                                                        Color::ZERO
                                                     );
                                     draw_shape_loop(&mut vec![triangle, square, circle],&mut window, &mut cur_thickness, &mut render, &mut display, color_array);
         }

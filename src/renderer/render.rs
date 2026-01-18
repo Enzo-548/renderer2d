@@ -29,31 +29,17 @@ impl Render{
     pub fn draw_shape(&mut self, shape: &Shape, layer:usize, thickness: i32){
         match &shape.kind{
             rect @ ShapeKind::Rect { center: origin, half_w: w, half_h: h }  => {
-                let is_filled = {
-                    if shape.inline_color == shape.outline_color {
-                        true
-                    } else {
-                        false
-                    }
-                };
-                 if shape.inline_color != Color::ZERO && is_filled == true{
+                if shape.inline_color != Color::ZERO{
                     self.geo_fill(rect, layer, shape.inline_color);
                 }
                 self.draw_rectangle(layer, origin.0 as i32, origin.1 as i32, *w as i32, *h as i32, thickness, shape.outline_color);
                 
             },
             circle @ ShapeKind::Circle { center, r } => {
-                let is_filled = {
-                    if shape.inline_color == shape.outline_color {
-                        true
-                    } else {
-                        false
-                    }
-                };
-                self.draw_circle(layer, center.0 as i32, center.1 as i32, *r as i32, thickness, shape.outline_color);
-                if shape.inline_color == Color::ZERO && is_filled == true{
+                if shape.inline_color != Color::ZERO{
                     self.geo_fill(circle, layer, shape.inline_color);
                 }
+                self.draw_circle(layer, center.0 as i32, center.1 as i32, *r as i32, thickness, shape.outline_color);
             },
             ShapeKind::Ellipse { center, rx, ry } => {
                 todo!()
@@ -63,13 +49,9 @@ impl Render{
                 todo!()
             },
             polygon @ ShapeKind::Polygon { vertices } => {
-                let is_filled = {
-                    if shape.inline_color == shape.outline_color {
-                        true
-                    } else {
-                        false
-                    }
-                };
+                if shape.inline_color != Color::ZERO{
+                    self.geo_fill(polygon, layer, shape.inline_color);
+                }
                 let (x_ref_vertex1, y_ref_vertex1) = *vertices.get(0).unwrap();
                 let (x_ref_vertex2, y_ref_vertex2) = *vertices.get(1).unwrap();
                 let (x_ref_vertex3, y_ref_vertex3) = *vertices.get(2).unwrap();
@@ -77,10 +59,6 @@ impl Render{
                     x_ref_vertex1 as i32, y_ref_vertex1 as i32, 
                     x_ref_vertex2 as i32, y_ref_vertex2 as i32, 
                     x_ref_vertex3 as i32, y_ref_vertex3 as i32, thickness, shape.outline_color);
-                
-                if shape.inline_color != Color::ZERO && is_filled == true{
-                    self.geo_fill(polygon, layer, shape.inline_color);
-                }
             },
         }
     }
@@ -199,9 +177,21 @@ pub fn draw_line(
         self.draw_line(layer,x_ref_vertex1, y_ref_vertex1, x_ref_vertex3, y_ref_vertex3, thickness, color);
         self.draw_line(layer,x_ref_vertex2, y_ref_vertex2, x_ref_vertex3, y_ref_vertex3, thickness, color);
 
-        self.draw_circle(layer,x_ref_vertex1, y_ref_vertex1, r, 0, color);
-        self.draw_circle(layer,x_ref_vertex2, y_ref_vertex2, r, 0, color);
-        self.draw_circle(layer, x_ref_vertex3, y_ref_vertex3, r, 0, color);
+        self.draw_shape(
+            &Shape::new_defined_monochrome(
+            ShapeKind::Circle { center: (x_ref_vertex1 as f32, y_ref_vertex1 as f32), r: r as f32}, 
+            color), 
+            layer, 0);
+        self.draw_shape(
+            &Shape::new_defined_monochrome(
+            ShapeKind::Circle { center: (x_ref_vertex2 as f32, y_ref_vertex2 as f32), r: r as f32}, 
+            color), 
+            layer, 0);
+        self.draw_shape(
+            &Shape::new_defined_monochrome(
+            ShapeKind::Circle { center: (x_ref_vertex3 as f32, y_ref_vertex3 as f32), r: r as f32}, 
+            color), 
+            layer, 0);
         }
 
     pub fn draw_circle(
