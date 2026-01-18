@@ -97,8 +97,6 @@ Layers are composed explicitly during the render pass.
 
 ## 🎮 Controls
 
-The numeric keypad controls screen color and drawing parameters:
-
 | Key          | Action                                               |
 | ------------ | ---------------------------------------------------- |
 | NumPad 0     | White screen                                         |
@@ -114,6 +112,7 @@ The numeric keypad controls screen color and drawing parameters:
 | T            | Draw a triangle                                      |
 | C            | Draw a circle                                        |
 | F            | Bucket fill at the center of the screen              |
+| X*           | Enters draw shape mode*                              |
 | Arrow Up     | Draw a vertical line from the top-middle             |
 | Arrow Left   | Draw a horizontal line from the middle-left          |
 | Arrow Down   | Draw a diagonal line from the top-right              |
@@ -121,6 +120,14 @@ The numeric keypad controls screen color and drawing parameters:
 | Mouse Left   | Draw with the selected brush (preview on overlay, commit on release) |
 | NumPad Enter | Save the current buffer to `assets/output`           |
 | ESC          | Exit the program                                     |
+
+---
+
+*Draw shape mode controls
+
+| Arrow keys and M | Moves the shape on the canvas |
+| Arrow keys and S | Changes the scale of the shape|
+| Arrow Right or Arrow Left | Rotates the shape on either the right side or the left side |
 
 ---
 
