@@ -1,4 +1,5 @@
 use crate::renderer::{color::Color, render::Render};
+#[derive (Clone)]
 pub enum ShapeKind {
     Rect { center: (f32, f32), half_w: f32, half_h: f32 },
     Circle { center: (f32, f32), r: f32 },
@@ -7,9 +8,16 @@ pub enum ShapeKind {
     Polygon { vertices: Vec<(f32, f32)> },
     
 }
+#[derive (Clone)]
+struct Transforms {
+    translate: (f32,f32),
+    scale: (f32,f32),
+    angle: f32,
+}
 
 pub struct Shape{
     pub kind: ShapeKind,
+    transforms: Transforms,
     pub outline_color: Color,
     pub inline_color: Color,
 }
@@ -24,6 +32,7 @@ impl Shape{
     ) -> Shape{
         Self{
             kind,
+            transforms: Transforms { translate: (0.0,0.0), scale: (1.0,1.0), angle: 0.0},
             outline_color,
             inline_color,
         }
@@ -36,25 +45,44 @@ impl Shape{
     ) -> Shape{
         Self{
             kind,
+            transforms: Transforms { translate: (0.0,0.0), scale: (1.0,1.0), angle: 0.0},
             outline_color: color,
             inline_color: color,
         }
     }
     
+    fn world_shape(&self) -> Shape{
+        let mut global_kind = self.kind.clone();        
+            global_kind.scale(self.transforms.scale.0, self.transforms.scale.1);
+        
+            global_kind.rotate(self.transforms.angle);
+
+            global_kind.translate(self.transforms.translate.0, self.transforms.translate.1);
+
+            Shape::new_defined_monochrome(global_kind, self.outline_color)
+    
+    }
+
     pub fn translate(&mut self, dx: f32, dy: f32) {
-        self.kind.translate(dx, dy);
+        let (mut x, mut y) = self.transforms.translate;
+        x += dx; y+=dy;
+        self.transforms.translate = (x,y);
     }
 
     pub fn scale(&mut self, sx: f32, sy: f32) {
-        self.kind.scale(sx,sy);
+        let (mut x, mut y) = self.transforms.scale;
+        x += sx; y+=sy;
+        self.transforms.scale = (x,y);
     }
 
     pub fn rotate(&mut self, angle: f32) {
-        self.kind.rotate(angle);
+        let mut rot = self.transforms.angle;
+        rot += angle;
+        self.transforms.angle = rot;
     }
 
     pub fn rasterize(&self, renderer: &mut Render, layer:usize, thickness:i32){
-        renderer.draw_shape(&self,layer,thickness);
+        renderer.draw_shape(&self.world_shape(),layer,thickness);
     }
 }
 
@@ -129,43 +157,30 @@ impl ShapeKind {
             }
         }
     }
-    fn rotate(&mut self, angle: f32){
+    fn rotate(&mut self, angle: f32) {
         fn rotate_point(
-                x: f32,
-                y: f32,
-                cx: f32,
-                cy: f32,
-                angle: f32,
-            ) -> (f32, f32) {
-                let sin = angle.sin();
-                let cos = angle.cos();
+            x: f32,
+            y: f32,
+            cx: f32,
+            cy: f32,
+            angle: f32,
+        ) -> (f32, f32) {
+            let sin = angle.sin();
+            let cos = angle.cos();
 
-                let dx = x - cx;
-                let dy = y - cy;
+            let dx = x - cx;
+            let dy = y - cy;
 
-                (
-                    cx + dx * cos - dy * sin,
-                    cy + dx * sin + dy * cos,
-                )
-            }
-            match self {
-            ShapeKind::Rect { center: origin, .. } => {
-                let (x, y) = *origin;
-                let (rx, ry) = rotate_point(x, y, 0.0, 0.0, angle);
-                *origin = (rx, ry);
-            }
+            (
+                cx + dx * cos - dy * sin,
+                cy + dx * sin + dy * cos,
+            )
+        }
 
-            ShapeKind::Circle { center, .. } => {
-                let (x, y) = *center;
-                let (rx, ry) = rotate_point(x, y, 0.0, 0.0, angle);
-                *center = (rx, ry);
-            }
-
-            ShapeKind::Ellipse { center, .. } => {
-                let (x, y) = *center;
-                let (rx, ry) = rotate_point(x, y, 0.0, 0.0, angle);
-                *center = (rx, ry);
-            }
+        match self {
+            ShapeKind::Rect { .. } => {}
+            ShapeKind::Circle { .. } => {}
+            ShapeKind::Ellipse { .. } => {}
 
             ShapeKind::Line { a, b } => {
                 let cx = (a.0 + b.0) * 0.5;
@@ -178,7 +193,7 @@ impl ShapeKind {
                 *b = (bx, by);
             }
 
-            ShapeKind::Polygon { vertices } => {
+           ShapeKind::Polygon { vertices } => {
                 let mut cx = 0.0;
                 let mut cy = 0.0;
 

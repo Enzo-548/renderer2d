@@ -240,14 +240,14 @@ fn main() {
             };
             let mut x = 0.0;
             let mut y = 0.0;
-            let rot = if window.is_key_down(Key::Right) { 1.0 }
-            else if window.is_key_down(Key::Left) { -1.0 }
+            let rot = if window.is_key_down(Key::Right) { 0.1 }
+            else if window.is_key_down(Key::Left) { -0.1 }
             else { 0.0 };
                             if window.is_key_down(Key::Up){
-                                y += 1.0;
+                                y -= 1.0;
                             }
                             if window.is_key_down(Key::Down){
-                                y -= 1.0;
+                                y += 1.0;
                             }
                             if window.is_key_down(Key::Right){
                                 x += 1.0;
@@ -260,7 +260,7 @@ fn main() {
                             shape.translate(x, y);
                         } else if arrow_pressed && window.is_key_down(Key::S)
                         {
-                            shape.scale(1.0 + x * 0.01, 1.0 + y * 0.01);
+                            shape.scale(x*0.05,  y*0.05);
                         }else if window.is_key_pressed(Key::Right,KeyRepeat::Yes)
                             || window.is_key_pressed(Key::Left,KeyRepeat::Yes)
                         {
