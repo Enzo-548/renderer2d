@@ -125,9 +125,16 @@ Layers are composed explicitly during the render pass.
 
 *Draw shape mode controls
 
-| Arrow keys and M | Moves the shape on the canvas |
-| Arrow keys and S | Changes the scale of the shape|
+| Key          | Action                                               |
+| ------------ | ---------------------------------------------------- |
+| Arrow keys and M | Moves the shape on the canvas                    |
+| Arrow keys and S | Changes the scale of the shape                   |
 | Arrow Right or Arrow Left | Rotates the shape on either the right side or the left side |
+| NumPad Plus  | Increase thickness                                   |
+| NumPad Minus | Decrease thickness                                   |
+| LeftShift    | Changes the shape kind                               |
+| Comma        | Changes the inline color of the shape                |
+| Period       | Changes the outline color of the shape               |
 
 ---
 
