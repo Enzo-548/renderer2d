@@ -20,6 +20,17 @@ It deliberately prioritizes:
 This is not a graphics engine, but a **learning-oriented software artifact**
 designed to make trade-offs visible and discussable.
 
+## TL;DR
+
+- Fully custom **CPU-based 2D software renderer**, written from scratch in Rust
+- Built intentionally by following a **well-known rendering path**, not by reusing engines or frameworks
+- Shapes are **pure data** (no drawing logic, no hidden behavior)
+- Rasterization is **centralized and explicit** in the renderer
+- Framebuffer owns **all clipping and pixel safety**
+- The system retains **only the final pixel state** (no scene graph, no command history)
+- Designed as a **learning artifact** to make architectural trade-offs visible
+
+
 ---
 
 ## ✨ Features
@@ -180,16 +191,6 @@ These limitations are intentional at this stage.
 
 ---
 
-## 📌 Motivation
-
-This project was built as a **learning exercise** for:
-
-* applying Rust ownership, borrowing, and lifetimes in a renderer-style codebase
-* understanding low-level rendering concepts
-* practicing modular design and explicit architectural trade-offs and software building
-
----
-
 ## 📜 License
 
 This project is provided for educational purposes. Use it freely to learn and experiment.
@@ -199,6 +200,11 @@ This project is provided for educational purposes. Use it freely to learn and ex
 ## 📼 Demo
 
 ![Drawing with brush Demo](assets/demo/small_draw_demo.gif)
+
+---
+
+## 🎞️ Image Artifacts
+
 ![Draw Demo](assets/img_artifacts/draw_demo.png)
 
 ---

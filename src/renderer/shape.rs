@@ -59,7 +59,7 @@ impl Shape{
 
             global_kind.translate(self.transforms.translate.0, self.transforms.translate.1);
 
-            Shape::new_defined_monochrome(global_kind, self.outline_color)
+            Shape::new_defined_polychrome(global_kind, self.outline_color, self.inline_color)
     
     }
 

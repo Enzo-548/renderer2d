@@ -214,7 +214,7 @@ fn main() {
             }
             if col_sel_inline >= color_array.len() || col_sel_outline >= color_array.len(){
                 if col_sel_inline >= color_array.len(){
-                    col_sel_inline = 0;
+                    col_sel_inline = 0; 
                 }
                 if col_sel_outline >= color_array.len(){
                     col_sel_outline = 0;
@@ -289,9 +289,9 @@ fn main() {
                                     draw_color,
                                     Color::ZERO);
                                     let circle = Shape::new_defined_polychrome(
-                                                        renderer::shape::ShapeKind::Circle {center: (mid_height_canvas as f32, mid_width_canvas as f32), r: 50.0 },
-                                                        draw_color,
-                                                        Color::ZERO
+                                    renderer::shape::ShapeKind::Circle {center: (mid_height_canvas as f32, mid_width_canvas as f32), r: 50.0 },
+                                    draw_color,
+                                    Color::ZERO
                                                     );
                                     draw_shape_loop(&mut vec![triangle, square, circle],&mut window, &mut cur_thickness, &mut render, &mut display, color_array);
         }
