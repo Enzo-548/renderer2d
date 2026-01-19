@@ -42,9 +42,8 @@ impl Render{
             ShapeKind::Ellipse { center, rx, ry } => {
                 todo!()
             },
-            ShapeKind::Line { a, b } => {
+            ShapeKind::Line { a, b, .. } => {
                 self.draw_line(layer, a.0 as i32, a.1 as i32, b.0 as i32, b.1 as i32, thickness, shape.inline_color);
-                todo!()
             },
             polygon @ ShapeKind::Polygon { vertices } => {
                 self.geo_fill(polygon, layer, shape.inline_color);

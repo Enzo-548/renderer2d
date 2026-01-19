@@ -4,7 +4,7 @@ pub enum ShapeKind {
     Rect { center: (f32, f32), half_w: f32, half_h: f32 },
     Circle { center: (f32, f32), r: f32 },
     Ellipse { center: (f32, f32), rx: f32, ry: f32 },
-    Line { a: (f32,f32), b:(f32,f32) },
+    Line { a: (f32,f32), b:(f32,f32), start: bool},
     Polygon { vertices: Vec<(f32, f32)> },
     
 }
@@ -51,6 +51,10 @@ impl Shape{
         }
     }
     
+    pub fn reset_transforms(&mut self){
+        self.transforms = Transforms { translate: (0.0, 0.0), scale: (0.0, 0.0), angle: 0.0 }
+    }
+
     fn world_shape(&self) -> Shape{
         let mut global_kind = self.kind.clone();        
             global_kind.scale(self.transforms.scale.0, self.transforms.scale.1);
@@ -101,7 +105,7 @@ impl ShapeKind {
                 center.0 += dx;
                 center.1 += dy;
             }
-            ShapeKind::Line { a, b } => {
+            ShapeKind::Line { a, b, ..} => {
                 a.0 += dx;
                 a.1 += dy;
                 b.0 += dx;
@@ -128,11 +132,14 @@ impl ShapeKind {
                     *rx *= sx;
                     *ry *= sy; 
             }
-            ShapeKind::Line { a, b } => {
+            ShapeKind::Line { a, b, start } => {
+            if *start{
                 a.0 *= sx;
                 a.1 *= sy;
+            } else {
                 b.0 *= sx;
                 b.1 *= sy;
+                }
             }
             ShapeKind::Polygon { vertices } => {
                 fn centroid(vertices: &Vec<(f32,f32)>) -> (f32,f32) {
@@ -182,7 +189,7 @@ impl ShapeKind {
             ShapeKind::Circle { .. } => {}
             ShapeKind::Ellipse { .. } => {}
 
-            ShapeKind::Line { a, b } => {
+            ShapeKind::Line { a, b, .. } => {
                 let cx = (a.0 + b.0) * 0.5;
                 let cy = (a.1 + b.1) * 0.5;
 

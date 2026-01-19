@@ -2,7 +2,7 @@ mod renderer;
 
 use minifb::{HasWindowHandle, Key, KeyRepeat, Window, WindowOptions};
 use image::{ImageBuffer, Rgba};
-use crate::renderer::{color::{self, Color}, framebuffer::Framebuffer, render::Render, shape::Shape};
+use crate::renderer::{color::{self, Color}, framebuffer::Framebuffer, render::Render, shape::{Shape, ShapeKind}};
 
 fn main() {
     println!("Hello, world!");
@@ -185,7 +185,7 @@ fn main() {
         while !window.is_key_down(Key::Enter){
         if window.is_key_pressed(Key::LeftShift, KeyRepeat::No){
                 shape_sel += 1;
-                if shape_sel >= 3{
+                if shape_sel >= 4{
                     shape_sel = 0;
                 }
         }
@@ -257,14 +257,31 @@ fn main() {
                             }
                         if arrow_pressed && window.is_key_down(Key::M)
                         {
-                            shape.translate(x, y);
-                        } else if arrow_pressed && window.is_key_down(Key::S)
+                            shape.translate(x,  y);           
+                        } else if arrow_pressed && window.is_key_down(Key::S) 
                         {
-                            shape.scale(x*0.05,  y*0.05);
+                            match &mut shape.kind {
+                                ShapeKind::Line { start, .. } => {
+                                    /*
+                                    //Line{ start } = true
+                                    if window.is_key_pressed(Key::E, KeyRepeat::No){
+                                        if *start {
+                                           *start = false;
+                                        } else {
+                                            *start = true
+                                        }
+                                        println!("fui pressionado")
+                                    }*/
+                                        shape.scale(x*0.05,  y*0.05);
+                                }
+                                _ => shape.scale(x*0.05,  y*0.05) 
+                            }
                         }else if window.is_key_pressed(Key::Right,KeyRepeat::Yes)
                             || window.is_key_pressed(Key::Left,KeyRepeat::Yes)
                         {
                             shape.rotate(rot);
+                        } else if window.is_key_pressed(Key::R, KeyRepeat::No){
+                            shape.reset_transforms();
                         }
                 shape.rasterize(render, 0, *cur_thickness);
                 window
@@ -292,8 +309,12 @@ fn main() {
                                     renderer::shape::ShapeKind::Circle {center: (mid_height_canvas as f32, mid_width_canvas as f32), r: 50.0 },
                                     draw_color,
                                     Color::ZERO
-                                                    );
-                                    draw_shape_loop(&mut vec![triangle, square, circle],&mut window, &mut cur_thickness, &mut render, &mut display, color_array);
+                                    );
+                                    let line = Shape::new_defined_polychrome(
+                                        renderer::shape::ShapeKind::Line { a: (mid_width_canvas as f32, mid_height_canvas as f32), b: (mid_width_canvas as f32 + 25.0, mid_height_canvas as f32 + 25.0), start:true},
+                                        draw_color,
+                                        Color::ZERO);
+                                    draw_shape_loop(&mut vec![triangle, square, circle, line],&mut window, &mut cur_thickness, &mut render, &mut display, color_array);
         }
         if is_mouse_valid || window.get_mouse_down(minifb::MouseButton::Left){
             let mut pos_vec = Vec::new();
