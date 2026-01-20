@@ -200,6 +200,7 @@ This project is provided for educational purposes. Use it freely to learn and ex
 ## 📼 Demo
 
 ![Drawing with brush Demo](assets/demo/small_draw_demo.gif)
+![Shape loop Demo](assets/demo/transforms_demo.gif)
 
 ---
 
