@@ -214,4 +214,3 @@ This project is provided for educational purposes. Use it freely to learn and ex
 ![Lines Demo](assets/screenshots/colored-lines-with-all-colors.png)
 ![Square Demo](assets/screenshots/red-square-with-black-outline.png)
 ![Square Brush Demo](assets/screenshots/glad-and-stilish-girl.png)
-![Drawing Demo](assets/img_artifacts/worst_enemy_of_a_red_crab.png)
