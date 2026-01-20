@@ -19,7 +19,7 @@ fn main() {
     window.set_target_fps(60);
     
     let mut count_but = 0;
-    let color_array = [Color::WHITE,Color::BLACK,Color::RED,Color::GREEN,Color::BLUE];
+    let color_array = vec![Color::WHITE,Color::BLACK,Color::RED,Color::GREEN,Color::BLUE];
     let mut draw_color_sel = 0;
     let mut draw_color =    color_array[draw_color_sel];
     let mut cur_thickness = 1;
@@ -40,7 +40,7 @@ fn main() {
             } 
             overlay.clear(Color::ZERO);
         }
-        
+
         if window.is_key_pressed(Key::NumPadEnter, KeyRepeat::Yes){
             let raw = render.layers[1].as_u8_buffer();
 
@@ -107,7 +107,7 @@ fn main() {
         }
         if window.is_key_pressed(Key::RightShift, KeyRepeat::No){
                 draw_color_sel += 1;
-                if  draw_color_sel == 5{
+                if  draw_color_sel > color_array.len()-1{
                     draw_color_sel = 0;
                 }
             draw_color = color_array[draw_color_sel];
@@ -164,7 +164,7 @@ fn main() {
                 (0.0..h as f32).contains(&y)
             });
 
-            let mut last_mouse_pos: Option<(f32, f32)> = None;
+            //let mut last_mouse_pos: Option<(f32, f32)> = None;
         
 
         pub fn draw_shape_loop( 
@@ -173,7 +173,7 @@ fn main() {
             cur_thickness: &mut i32,
             render: &mut Render,
             display: &mut Framebuffer,
-            color_array: [Color; 5]
+            color_array: &[Color]
         ){
         let (mut col_sel_inline, mut col_sel_outline) = (0,0);
         let mut shape_sel = 0;
@@ -208,11 +208,11 @@ fn main() {
                 col_sel_outline+=1;
                 
             }
-            if col_sel_inline >= color_array.len() || col_sel_outline >= color_array.len(){
-                if col_sel_inline >= color_array.len(){
+            if col_sel_inline > color_array.len()-1 || col_sel_outline > color_array.len()-1{
+                if col_sel_inline > color_array.len()-1{
                     col_sel_inline = 0; 
                 }
-                if col_sel_outline >= color_array.len(){
+                if col_sel_outline > color_array.len()-1{
                     col_sel_outline = 0;
                 }
             }
@@ -257,7 +257,7 @@ fn main() {
                         } else if arrow_pressed && window.is_key_down(Key::S) 
                         {
                             match &mut shape.kind {
-                                ShapeKind::Line { start, .. } => {
+                                ShapeKind::Line { /*start,*/ .. } => {
                                     /*
                                     //Line{ start } = true
                                     if window.is_key_pressed(Key::E, KeyRepeat::No){
@@ -310,7 +310,7 @@ fn main() {
                                         renderer::shape::ShapeKind::Line { a: (mid_width_canvas as f32, mid_height_canvas as f32), b: (mid_width_canvas as f32 + 25.0, mid_height_canvas as f32 + 25.0), start:true},
                                         draw_color,
                                         Color::ZERO);
-                                    draw_shape_loop(&mut vec![triangle, square, circle, line],&mut window, &mut cur_thickness, &mut render, &mut display, color_array);
+                                    draw_shape_loop(&mut vec![triangle, square, circle, line],&mut window, &mut cur_thickness, &mut render, &mut display, color_array.as_slice());
         }
         if is_mouse_valid || window.get_mouse_down(minifb::MouseButton::Left){
             let mut pos_vec = Vec::new();
