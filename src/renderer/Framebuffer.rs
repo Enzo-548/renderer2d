@@ -1,18 +1,25 @@
 use crate::renderer::color::*;
 
 #[derive (Debug)]
+/// CPU-side framebuffer abstraction.
+/// Owns a contiguous pixel buffer and provides explicit read/write
+/// access for software rasterization and presentation.
 pub struct Framebuffer {
     pub width: u32,
     pub height: u32,
+    /// Contiguous pixel storage in row-major order.
+    /// Indexing follows (y * width + x).
     pixels_buffer: Vec<Color>,
+    /// Tracks the last clear color used on this framebuffer.
+    /// This is informational and not automatically reapplied.
     background_color : Color,
 }
 
 impl Framebuffer{
-    ///Creates a new framebuffer
+    /// Allocates a framebuffer with the given dimensions.
+    /// The pixel buffer is initialized to a uniform background color.
     pub fn new(width:u32,height:u32) -> Framebuffer{
         let size = (width*height) as usize;
-        println!("am tryna fill");
         Self{
             width,
             height,
@@ -20,7 +27,8 @@ impl Framebuffer{
             pixels_buffer: vec![Color::ZERO; size],
         }
     }
-    ///Returns the pixel buffer as an u32 list, is used for updating the event loop
+    /// Packs the framebuffer into a u32 buffer (ARGB layout).
+    /// Intended for presentation via window backends.
     pub fn as_u32_buffer(&self) -> Vec<u32> {
         self.cur_buffer()
             .iter()
@@ -32,21 +40,24 @@ impl Framebuffer{
             })
             .collect()
     }
-    ///Returns the pixel buffer as an u8 list, is used for saving the buffer onto a .png image
+    /// Packs the framebuffer into a byte buffer (RGBA order).
+    /// Intended for image export (e.g. PNG encoding).
     pub fn as_u8_buffer(&self) -> Vec<u8>{
         self.cur_buffer()
         .iter()
         .flat_map(|c| [c.r, c.g, c.b, c.a])
         .collect()
     }
-    ///Uses the specified color to clean the buffer
+    /// Fills the entire framebuffer with a single color.
+    /// This is an explicit operation and overwrites all pixels.
     pub fn clear(&mut self, color: Color){
         for pixel in &mut self.pixels_buffer{
             *pixel = color;
         }
         self.background_color = color;
     }
-    ///Updates the index at the (x,y) coordinate provided with the Color provided.
+    /// Writes a single pixel at the given coordinates.
+    /// Out-of-bounds writes are safely ignored.
     pub fn put_pixel(&mut self, x:u32, y:u32, color: Color){
         if x>= self.width || y>= self.height {
             return;
@@ -55,7 +66,8 @@ impl Framebuffer{
         let index = (y*self.width + x) as usize;
         self.pixels_buffer[index] = color;
     }
-    ///Returns the Color at the (x,y) coordinate provided.
+    /// Returns a mutable reference to a pixel at the given coordinates.
+    /// Used by algorithms that need read-modify-write semantics.
     pub fn return_pixel(&mut self, x:u32, y:u32) -> Option<&mut Color>{
             if x>= self.width || y>= self.height {
             return None;
@@ -65,19 +77,23 @@ impl Framebuffer{
             return Some(col_ref);
         }
     }
-    ///Returns the buffer as read-only, used for conversion to images. 
+    /// Exposes the framebuffer as a read-only slice.
+    /// Intended for inspection, conversion, or presentation.
     pub fn cur_buffer(&self) -> &[Color]{
         &self.pixels_buffer
     }
-    ///Returns the current buffer as mutable, this is not intended for other classes to use.
+    /// Internal mutable access to the pixel buffer.
+    /// Not exposed publicly to limit uncontrolled writes.
     fn cur_buffer_as_mut(&mut self) -> &mut [Color]{
         self.pixels_buffer.as_mut_slice()
     }
-    ///Updates the whole buffer.
+    /// Replaces the entire pixel buffer with external data.
+    /// The input slice must match the framebuffer size.
     pub fn update_buffer(&mut self, buffer: &[Color]){
         self.cur_buffer_as_mut().copy_from_slice(buffer);
     }
-    ///Updates the color at the specified index in the buffer.
+    /// Updates a pixel directly by linear index.
+    /// Intended for internal compositing and overlay operations.
     pub fn update_color(&mut self, col: Color, index: usize){
         self.cur_buffer_as_mut()[index] = col;
     }

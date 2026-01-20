@@ -1,20 +1,37 @@
 use crate::renderer::{color::Color, render::Render};
 #[derive (Clone)]
+
+/// Defines the geometric data of a shape in local space.
+/// This enum stores untransformed shape data and is intentionally
+/// kept free of rendering or transformation state.
 pub enum ShapeKind {
     Rect { center: (f32, f32), half_w: f32, half_h: f32 },
     Circle { center: (f32, f32), r: f32 },
     Ellipse { center: (f32, f32), rx: f32, ry: f32 },
+    /// Line segment defined by two endpoints.
+    /// The `start` flag is used to control which endpoint is affected
+    /// by certain local-space operations (e.g. scaling experiments).
     Line { a: (f32,f32), b:(f32,f32), start: bool},
     Polygon { vertices: Vec<(f32, f32)> },
     
 }
 #[derive (Clone)]
+/// Accumulates transformation intents (translation, scale, rotation)
+/// to be applied explicitly during shape materialization.
+/// This avoids mutating the original shape data.
 struct Transforms {
     translate: (f32,f32),
     scale: (f32,f32),
     angle: f32,
 }
 
+/// High-level renderable shape composed of:
+/// - immutable local-space geometry (ShapeKind)
+/// - accumulated transform state
+/// - rendering attributes (colors)
+///
+/// The shape itself is not directly rasterized; it must first be
+/// materialized into world space.
 pub struct Shape{
     pub kind: ShapeKind,
     transforms: Transforms,
@@ -23,7 +40,8 @@ pub struct Shape{
 }
 
 impl Shape{
-    ///Cria shape com duas cores
+    /// Constructs a shape with distinct outline and fill colors.
+    /// The shape starts with identity transforms (no deformation applied).
     pub fn new_defined_polychrome
     (
         kind: ShapeKind, 
@@ -37,7 +55,8 @@ impl Shape{
             inline_color,
         }
     }
-    ///Cria shape com uma cor unitaria
+    /// Constructs a shape using a single color for both outline and fill.
+    /// Useful for simple primitives and early experiments.
     pub fn new_defined_monochrome
     (
         kind: ShapeKind, 
@@ -50,11 +69,12 @@ impl Shape{
             inline_color: color,
         }
     }
-    
     pub fn reset_transforms(&mut self){
-        self.transforms = Transforms { translate: (0.0, 0.0), scale: (0.0, 0.0), angle: 0.0 }
+        self.transforms = Transforms { translate: (0.0, 0.0), scale: (1.0, 1.0), angle: 0.0 }
     }
-
+    /// Materializes the shape into world space by applying all accumulated
+    /// transforms to the underlying ShapeKind.
+    /// The original local-space shape data remains unchanged.
     fn world_shape(&self) -> Shape{
         let mut global_kind = self.kind.clone();        
             global_kind.scale(self.transforms.scale.0, self.transforms.scale.1);
@@ -66,31 +86,36 @@ impl Shape{
             Shape::new_defined_polychrome(global_kind, self.outline_color, self.inline_color)
     
     }
-
+    /// Transform operations accumulate intent rather than directly
+    /// modifying the underlying shape geometry.
+    /// All transforms are applied lazily during materialization.
     pub fn translate(&mut self, dx: f32, dy: f32) {
         let (mut x, mut y) = self.transforms.translate;
         x += dx; y+=dy;
         self.transforms.translate = (x,y);
     }
-
+    
     pub fn scale(&mut self, sx: f32, sy: f32) {
         let (mut x, mut y) = self.transforms.scale;
         x += sx; y+=sy;
         self.transforms.scale = (x,y);
     }
-
+    
     pub fn rotate(&mut self, angle: f32) {
         let mut rot = self.transforms.angle;
         rot += angle;
         self.transforms.angle = rot;
     }
-
+    /// Materializes the shape and submits it to the renderer.
+    /// Rasterization always operates on a world-space representation.
     pub fn rasterize(&self, renderer: &mut Render, layer:usize, thickness:i32){
         renderer.draw_shape(&self.world_shape(),layer,thickness);
     }
 }
 
 impl ShapeKind {
+    /// Applies a translation directly to the local-space geometry.
+    /// This is only called during shape materialization.
     fn translate(&mut self, dx: f32, dy: f32) {
         match self {
             ShapeKind::Rect { center: origin, .. } => {
@@ -119,6 +144,8 @@ impl ShapeKind {
             }
         }
     }
+    /// Applies non-uniform scaling in local space.
+    /// Different shape variants define their own scaling semantics.
     fn scale(&mut self, sx: f32, sy: f32){
         match self {
             ShapeKind::Rect {half_w: w, half_h: h, ..} => {
@@ -164,6 +191,8 @@ impl ShapeKind {
             }
         }
     }
+    /// Applies rotation in local space around a shape-defined pivot
+    /// (e.g. centroid or midpoint, depending on the shape).
     fn rotate(&mut self, angle: f32) {
         fn rotate_point(
             x: f32,

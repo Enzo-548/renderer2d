@@ -35,8 +35,6 @@ designed to make trade-offs visible and discussable.
 
 ## ✨ Features
 
-🚧 Work in progress
-
 * **Explicit layered framebuffer model** (overlay vs committed content)
 * Custom **RGBA framebuffer** stored entirely in CPU memory
 * CPU-based rasterization of basic primitives:
@@ -146,6 +144,7 @@ Layers are composed explicitly during the render pass.
 | LeftShift    | Changes the shape kind                               |
 | Comma        | Changes the inline color of the shape                |
 | Period       | Changes the outline color of the shape               |
+| R            | Resets the shape applied transformations             |
 
 ---
 

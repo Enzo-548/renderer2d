@@ -1,14 +1,13 @@
 mod renderer;
 
-use minifb::{HasWindowHandle, Key, KeyRepeat, Window, WindowOptions};
+use minifb::{Key, KeyRepeat, Window, WindowOptions};
 use image::{ImageBuffer, Rgba};
-use crate::renderer::{color::{self, Color}, framebuffer::Framebuffer, render::Render, shape::{Shape, ShapeKind}};
+use crate::renderer::{color::{Color}, framebuffer::Framebuffer, render::Render, shape::{Shape, ShapeKind}};
 
 fn main() {
-    println!("Hello, world!");
     let mut render: Render = Render::new(Framebuffer::new(600, 600));
     let mut window = Window::new(
-        "Test - ESC to exit",
+        "2D Renderer Prototype",
         render.layers[1].width as usize,
         render.layers[1].height as usize,
         WindowOptions::default(),
@@ -29,9 +28,6 @@ fn main() {
     let mut display = Framebuffer::new(render.layers[1].width, render.layers[1].height);
 
     while window.is_open() && !window.is_key_down(Key::Escape) {
-        /*for i in render.buffer().iter_mut() {
-            *i = 0; // write something more funny here!
-        }*/
         display.update_buffer(render.layers[1].cur_buffer());
         
         if let Some(overlay) = render.overlay_mut() {
@@ -369,7 +365,6 @@ fn main() {
                     }
                 }            
         }
-        // We unwrap here as we want this code to exit if it fails. Real applications may want to handle this in a different way
         window
             .update_with_buffer(&display.as_u32_buffer(), display.width as usize, display.height as usize)
             .unwrap();
