@@ -6,3 +6,4 @@
 - implement antialiasing??
     - then implement vector graphics
 - rewrite shape draws
+- rewrite main so that some commands be repackged onto some of the class files 
